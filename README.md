@@ -21,6 +21,8 @@ https://github.com/whereareiam/noctalia-plugins
 <details>
 <summary><strong>Tabber</strong> — macOS like window switcher</summary>
 
+<img width="1293" height="515" alt="Tabber showcase" src="https://github.com/user-attachments/assets/eb4d1e80-e864-4eca-aee1-750f43a31745" />
+
 ### What it does
 
 Tabber provides an Alt-Tab style switcher for Noctalia on Hyprland.

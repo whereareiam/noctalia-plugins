@@ -1,0 +1,23 @@
+{
+  "triggerKeybind": "Alt+Tab",
+  "reverseTriggerKeybind": "Alt+Shift+Tab",
+  "groupWindowsByApp": true,
+  "showHiddenWindows": true,
+  "dimOpacity": 0.36,
+  "cardSize": 108,
+  "actions": [
+    {
+      "id": "close",
+      "keybind": "Alt+Q",
+      "script": "scripts/close-selected-group.sh"
+    },
+    {
+      "id": "hide",
+      "keybind": "Alt+H",
+      "script": "scripts/hide-selected-group.sh"
+    }
+  ],
+  "showHeader": true,
+  "headerText": "Tabber",
+  "showWindowCount": true
+}

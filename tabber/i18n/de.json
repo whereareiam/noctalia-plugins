@@ -1,0 +1,139 @@
+{
+  "overlay": {
+    "title": "Tabber",
+    "windowCount": "{count} Fenster",
+    "windowCount-plural": "{count} Fenster"
+  },
+  "settings": {
+    "tabs": {
+      "general": "Allgemein",
+      "appearance": "Darstellung",
+      "keybinds": "Tastenkürzel"
+    },
+    "general": {
+      "title": "Allgemein",
+      "intro": "Gruppierter App-Umschalter im Alt-Tab-Stil. Die Hyprland-Seite ist bereits mit den mitgelieferten Tabber-Trigger- und Aktionsskripten verdrahtet.",
+      "groupByApp": {
+        "label": "Fenster nach App gruppieren",
+        "description": "Wenn aktiviert, erscheinen mehrere Fenster derselben App als ein Eintrag. Deaktivieren für normales Umschalten pro Fenster."
+      },
+      "showHidden": {
+        "label": "Versteckte Fenster anzeigen",
+        "description": "Wenn aktiviert, bleiben versteckte Fenster in Tabber sichtbar und werden beim Auswählen wiederhergestellt."
+      }
+    },
+    "appearance": {
+      "title": "Darstellung",
+      "sections": {
+        "container": "Container",
+        "selection": "Auswahl",
+        "header": "Kopfzeile"
+      },
+      "dimOpacity": {
+        "label": "Abdunklungsstärke",
+        "description": "Stärke der Hintergrundabdunklung zwischen 0,10 und 0,85."
+      },
+      "containerWidth": {
+        "label": "Containerbreite",
+        "description": "Minimale Breite des Umschalters in Pixeln. Setze 0 für automatische Breite."
+      },
+      "cardSize": {
+        "label": "Kartengröße",
+        "description": "Grundgröße der Symbolkarte zwischen 64 und 128."
+      },
+      "cardGap": {
+        "label": "Kartenabstand",
+        "description": "Abstand zwischen Karten und Titelzeilen zwischen 0 und 48."
+      },
+      "iconSize": {
+        "label": "Symbolgröße",
+        "description": "Symbolgröße innerhalb jeder Karte zwischen 24 und 96."
+      },
+      "containerPadding": {
+        "label": "Container-Abstand",
+        "description": "Innerer Abstand um Kopfzeile und Karten zwischen 8 und 48."
+      },
+      "containerPaddingLinked": {
+        "label": "Container-Abstände koppeln",
+        "description": "Wenn aktiviert, aktualisiert das Ändern eines Container-Abstands alle vier Seiten."
+      },
+      "showHeader": {
+        "label": "Kopfzeile anzeigen",
+        "description": "Zeigt die Kopfzeile oberhalb der Umschalter-Karten an."
+      },
+      "headerAlignment": {
+        "label": "Ausrichtung der Kopfzeile",
+        "description": "Wie Titel und Anzahl in der Kopfzeile ausgerichtet werden.",
+        "options": {
+          "spaceBetween": "Zwischenraum",
+          "left": "Links",
+          "center": "Zentriert"
+        }
+      },
+      "headerPadding": {
+        "label": "Kopfzeilenabstand",
+        "description": "Zusätzlicher Abstand um die Kopfzeile zwischen 0 und 36."
+      },
+      "headerPaddingLinked": {
+        "label": "Kopfzeilen-Abstände koppeln",
+        "description": "Wenn aktiviert, aktualisiert das Ändern eines Kopfzeilen-Abstands alle vier Seiten."
+      },
+      "headerText": {
+        "label": "Kopfzeilentext",
+        "description": "Benutzerdefinierter Text, der in der Kopfzeile angezeigt wird, wenn sie aktiviert ist."
+      },
+      "showWindowCount": {
+        "label": "Fensteranzahl anzeigen",
+        "description": "Zeigt die Anzahl der Fenster der gewählten Gruppe im Kopfzeilen-Badge an."
+      },
+      "titleVisibility": {
+        "label": "Sichtbarkeit der Fenstertitel",
+        "description": "Legt fest, wann Fenstertitel unter den Karten angezeigt werden.",
+        "options": {
+          "selected": "Nur ausgewählt",
+          "all": "Alle Karten",
+          "hidden": "Versteckt"
+        }
+      },
+      "titleTruncationMode": {
+        "label": "Titel-Kürzungsmodus",
+        "description": "Wie lange Titel gekürzt werden, wenn der Platz nicht ausreicht.",
+        "options": {
+          "end": "Auslassung am Ende",
+          "middle": "Auslassung in der Mitte",
+          "twoLines": "Zwei Zeilen"
+        }
+      },
+      "padding": {
+        "description": "Abstand pro Seite in Pixeln."
+      },
+      "paddingTop": {
+        "label": "Oberer Abstand"
+      },
+      "paddingRight": {
+        "label": "Rechter Abstand"
+      },
+      "paddingBottom": {
+        "label": "Unterer Abstand"
+      },
+      "paddingLeft": {
+        "label": "Linker Abstand"
+      }
+    },
+    "keybinds": {
+      "title": "Tastenkürzel",
+      "hyprNoticeTitle": "Tabber-Hotkeys werden in deiner Hyprland-Konfiguration gesetzt, nicht hier in den Plugin-Einstellungen.",
+      "hyprNoticeDescription": "Wähle beliebige Hyprland-Tastenkürzel und verweise damit auf die globalen Tabber-Aktionen. Lade danach Hyprland neu.",
+      "currentLinesLabel": "Beispielhafte Hyprland-Bindings:",
+      "actionsNote": "Die untenstehenden Aktionsbindungen gehören weiterhin zu Tabber selbst.",
+      "actionsTitle": "Aktionen",
+      "addAction": "Aktion hinzufügen",
+      "actionEntry": {
+        "title": "Aktion {index}",
+        "removeTooltip": "Aktion entfernen",
+        "keybindLabel": "Tastenkürzel",
+        "scriptLabel": "Skript"
+      }
+    }
+  }
+}

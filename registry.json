@@ -1,0 +1,15 @@
+{
+  "plugins": [
+    {
+      "id": "tabber",
+      "name": "Tabber",
+      "version": "0.1.0",
+      "minNoctaliaVersion": "3.6.0",
+      "author": "whereareiam",
+      "license": "MIT",
+      "repository": "https://github.com/whereareiam/Tabber",
+      "description": "macOS-like grouped app switcher overlay for Noctalia",
+      "tags": ["Overlay", "Switcher", "Window Management"]
+    }
+  ]
+}

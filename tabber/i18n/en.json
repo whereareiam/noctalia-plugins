@@ -1,0 +1,139 @@
+{
+  "overlay": {
+    "title": "Tabber",
+    "windowCount": "{count} window",
+    "windowCount-plural": "{count} windows"
+  },
+  "settings": {
+    "tabs": {
+      "general": "General",
+      "appearance": "Appearance",
+      "keybinds": "Keybinds"
+    },
+    "general": {
+      "title": "General",
+      "intro": "Grouped app switcher overlay for Alt-Tab style navigation. The Hyprland side is already wired to the bundled Tabber trigger/action scripts.",
+      "groupByApp": {
+        "label": "Group windows by app",
+        "description": "When enabled, multiple windows from the same app appear as one item. Disable it for normal per-window switching."
+      },
+      "showHidden": {
+        "label": "Show hidden windows",
+        "description": "When enabled, hidden windows stay visible in Tabber and selecting them restores them from hidden."
+      }
+    },
+    "appearance": {
+      "title": "Appearance",
+      "sections": {
+        "container": "Container",
+        "selection": "Selection",
+        "header": "Header"
+      },
+      "dimOpacity": {
+        "label": "Dim opacity",
+        "description": "Background dim amount between 0.10 and 0.85."
+      },
+      "containerWidth": {
+        "label": "Container width",
+        "description": "Minimum switcher width in pixels. Set 0 to keep automatic width."
+      },
+      "cardSize": {
+        "label": "Card size",
+        "description": "Base icon-card size between 64 and 128."
+      },
+      "cardGap": {
+        "label": "Card gap",
+        "description": "Spacing between cards and title slots between 0 and 48."
+      },
+      "iconSize": {
+        "label": "Icon size",
+        "description": "Icon size inside each card between 24 and 96."
+      },
+      "containerPadding": {
+        "label": "Container padding",
+        "description": "Inner padding around the header and cards between 8 and 48."
+      },
+      "containerPaddingLinked": {
+        "label": "Link container padding sides",
+        "description": "When enabled, changing one container padding value updates all four sides."
+      },
+      "showHeader": {
+        "label": "Show header",
+        "description": "Show the header row above the switcher cards."
+      },
+      "headerAlignment": {
+        "label": "Header alignment",
+        "description": "How the header title and count are aligned.",
+        "options": {
+          "spaceBetween": "Space between",
+          "left": "Left",
+          "center": "Center"
+        }
+      },
+      "headerPadding": {
+        "label": "Header padding",
+        "description": "Extra padding around the header row between 0 and 36."
+      },
+      "headerPaddingLinked": {
+        "label": "Link header padding sides",
+        "description": "When enabled, changing one header padding value updates all four sides."
+      },
+      "headerText": {
+        "label": "Header text",
+        "description": "Custom text shown in the header when it is enabled."
+      },
+      "showWindowCount": {
+        "label": "Show window count",
+        "description": "Display the selected group window count in the header badge."
+      },
+      "titleVisibility": {
+        "label": "Window title visibility",
+        "description": "Choose when window titles are shown below the cards.",
+        "options": {
+          "selected": "Selected only",
+          "all": "All cards",
+          "hidden": "Hidden"
+        }
+      },
+      "titleTruncationMode": {
+        "label": "Title truncation mode",
+        "description": "How long titles are shortened when there is not enough space.",
+        "options": {
+          "end": "End ellipsis",
+          "middle": "Middle ellipsis",
+          "twoLines": "Two lines"
+        }
+      },
+      "padding": {
+        "description": "Padding per side in pixels."
+      },
+      "paddingTop": {
+        "label": "Top padding"
+      },
+      "paddingRight": {
+        "label": "Right padding"
+      },
+      "paddingBottom": {
+        "label": "Bottom padding"
+      },
+      "paddingLeft": {
+        "label": "Left padding"
+      }
+    },
+    "keybinds": {
+      "title": "Keybinds",
+      "hyprNoticeTitle": "Tabber hotkeys are set in your Hyprland config, not here in the plugin settings.",
+      "hyprNoticeDescription": "Choose any Hyprland keybinds you want and point them at the Tabber global actions, then reload Hyprland.",
+      "currentLinesLabel": "Example Hyprland bindings:",
+      "actionsNote": "The action bindings below still belong to Tabber itself.",
+      "actionsTitle": "Actions",
+      "addAction": "Add action",
+      "actionEntry": {
+        "title": "Action {index}",
+        "removeTooltip": "Remove action",
+        "keybindLabel": "Keybind",
+        "scriptLabel": "Script"
+      }
+    }
+  }
+}

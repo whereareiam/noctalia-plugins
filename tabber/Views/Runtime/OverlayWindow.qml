@@ -25,6 +25,10 @@ PanelWindow {
     readonly property int headerPaddingRightPx: Math.round(root.settingsState.headerPaddingRight * Style.uiScaleRatio)
     readonly property int headerPaddingBottomPx: Math.round(root.settingsState.headerPaddingBottom * Style.uiScaleRatio)
     readonly property int headerPaddingLeftPx: Math.round(root.settingsState.headerPaddingLeft * Style.uiScaleRatio)
+    readonly property int headerContentWidth: headerLoader.item
+        ? Math.ceil(headerLoader.item.implicitWidth) + root.headerPaddingLeftPx + root.headerPaddingRightPx
+        : 0
+    readonly property int minimumContentWidth: Math.max(root.headerContentWidth, groupStrip.implicitWidth)
     color: "transparent"
 
     anchors {
@@ -111,7 +115,7 @@ PanelWindow {
                                 id: unifiedContainer
 
                                 Layout.alignment: Qt.AlignHCenter
-                                implicitWidth: Math.max(root.configuredContainerWidth, groupStrip.implicitWidth) + root.containerPaddingLeftPx + root.containerPaddingRightPx
+                                implicitWidth: Math.max(root.configuredContainerWidth, root.minimumContentWidth) + root.containerPaddingLeftPx + root.containerPaddingRightPx
                                 implicitHeight: unifiedColumn.implicitHeight + root.containerPaddingTopPx + root.containerPaddingBottomPx
                                 radius: Style.radiusM
                                 color: Qt.alpha(Color.mSurface, 0.74)

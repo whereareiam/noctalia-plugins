@@ -1,7 +1,8 @@
 {
   "general": {
     "groupWindowsByApp": true,
-    "restrictToCurrentMonitor": true
+    "restrictToCurrentMonitor": true,
+    "requirePointerMovementForHoverSelection": true
   },
   "appearance": {
     "dimOpacity": 0.36,

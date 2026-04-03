@@ -19,7 +19,8 @@
     "defaultSettings": {
       "general": {
         "groupWindowsByApp": true,
-        "restrictToCurrentMonitor": false
+        "restrictToCurrentMonitor": false,
+        "requirePointerMovementForHoverSelection": true
       },
       "appearance": {
         "dimOpacity": 0.36,

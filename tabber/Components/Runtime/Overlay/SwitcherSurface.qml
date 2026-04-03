@@ -14,6 +14,7 @@ Item {
     required property var selectedGroup
     property string selectedGroupId: ""
     property var displayGroups: []
+    property bool hoverSelectionEnabled: true
 
     signal groupHovered(string groupId)
 
@@ -117,6 +118,7 @@ Item {
                     iconSize: Number(root.appearanceSettings.selection.iconSize || 64)
                     titleVisibility: String(root.appearanceSettings.selection.titleVisibility || "selected")
                     titleTruncationMode: String(root.appearanceSettings.selection.titleTruncationMode || "end")
+                    hoverSelectionEnabled: root.hoverSelectionEnabled
                     onGroupHovered: groupId => root.groupHovered(groupId)
                     onGroupActivated: groupId => root.groupActivated(groupId)
                 }

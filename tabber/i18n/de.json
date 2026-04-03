@@ -22,6 +22,10 @@
         "currentMonitorOnly": {
           "label": "Nur aktueller Monitor",
           "description": "Wenn aktiviert, zeigt Tabber nur Fenster von dem Monitor an, auf dem das Overlay geoeffnet wurde."
+        },
+        "requirePointerMovementForHoverSelection": {
+          "label": "Zeigerbewegung fuer Hover-Auswahl verlangen",
+          "description": "Wenn aktiviert, kann eine stillstehende Maus die anfaengliche Tabber-Auswahl nicht veraendern. Hover wirkt sich erst aus, nachdem sich der Zeiger bewegt hat."
         }
       }
     },

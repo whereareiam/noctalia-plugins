@@ -22,6 +22,10 @@
         "currentMonitorOnly": {
           "label": "Current monitor only",
           "description": "When enabled, Tabber only shows windows from the monitor where the overlay was opened."
+        },
+        "requirePointerMovementForHoverSelection": {
+          "label": "Require pointer movement for hover selection",
+          "description": "When enabled, a stationary mouse cannot change the initial Tabber selection. Hover only starts affecting selection after the pointer moves."
         }
       }
     },

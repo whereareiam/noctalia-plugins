@@ -12,6 +12,7 @@ MouseArea {
     property bool selected: false
     property int cardSize: 108
     property int iconSizeValue: 64
+    property bool hoverSelectionEnabled: true
 
     signal hoverSelected
     signal activateSelected
@@ -42,7 +43,13 @@ MouseArea {
     height: tileSize
 
     onEntered: {
-        if (!selected) {
+        if (root.hoverSelectionEnabled && !selected) {
+            hoverSelected();
+        }
+    }
+
+    onPositionChanged: {
+        if (root.hoverSelectionEnabled && root.containsMouse && !root.selected) {
             hoverSelected();
         }
     }

@@ -15,9 +15,30 @@ function isSpecialWorkspaceId(value) {
 
 function choosePreferredWindow(windows, preferredWindowId) {
     for (var i = 0; i < windows.length; i++) {
+        var preferredCandidate = windows[i];
+        if (preferredCandidate.id === preferredWindowId && preferredCandidate.isHidden !== true) {
+            return preferredCandidate;
+        }
+    }
+
+    for (var i = 0; i < windows.length; i++) {
         var candidate = windows[i];
-        if (candidate.id === preferredWindowId || candidate.isFocused) {
+        if (candidate.isFocused && candidate.isHidden !== true) {
             return candidate;
+        }
+    }
+
+    for (var i = 0; i < windows.length; i++) {
+        var visibleCandidate = windows[i];
+        if (visibleCandidate.isHidden !== true) {
+            return visibleCandidate;
+        }
+    }
+
+    for (var i = 0; i < windows.length; i++) {
+        var hiddenPreferredCandidate = windows[i];
+        if (hiddenPreferredCandidate.id === preferredWindowId) {
+            return hiddenPreferredCandidate;
         }
     }
 

@@ -2,7 +2,7 @@ import QtQuick
 
 import "./Models/Runtime" as RuntimeModels
 import "./Models/Settings" as SettingsModels
-import "./Services/Runtime" as RuntimeServices
+import "./Services" as Services
 import "./Views/Runtime" as RuntimeViews
 import qs.Services.Compositor
 
@@ -11,8 +11,8 @@ Item {
 
     property var pluginApi: null
 
-    SettingsModels.SettingsState {
-        id: settingsState
+    SettingsModels.SettingsStore {
+        id: settingsStore
 
         pluginApi: root.pluginApi
     }
@@ -25,26 +25,34 @@ Item {
         id: groupModel
 
         session: session
-        settingsState: settingsState
+        settingsStore: settingsStore
+    }
+
+    RuntimeModels.SelectionModel {
+        id: selectionModel
+
+        session: session
+        groupModel: groupModel
     }
 
     RuntimeModels.ActionRegistry {
         id: actionRegistry
 
-        settingsState: settingsState
+        settingsStore: settingsStore
     }
 
-    RuntimeServices.Controller {
+    Services.TabberController {
         id: controller
 
         pluginApi: root.pluginApi
-        settingsState: settingsState
+        settingsStore: settingsStore
         session: session
         groupModel: groupModel
+        selectionModel: selectionModel
         actionRegistry: actionRegistry
     }
 
-    RuntimeServices.ShortcutService {
+    Services.ShortcutBindings {
         controller: controller
     }
 
@@ -52,7 +60,8 @@ Item {
         controller: controller
         session: session
         groupModel: groupModel
-        settingsState: settingsState
+        selectionModel: selectionModel
+        settingsStore: settingsStore
     }
 
     Component.onCompleted: controller.initialize()

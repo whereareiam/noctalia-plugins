@@ -8,7 +8,8 @@ import qs.Widgets
 ColumnLayout {
     id: root
 
-    required property var settingsState
+    required property var settingsStore
+    required property var settingsForm
     property real preferredWidth: 720 * Style.uiScaleRatio
 
     spacing: 0
@@ -25,8 +26,8 @@ ColumnLayout {
 
         NTabButton {
             text: {
-                root.settingsState.translationVersion;
-                return root.settingsState.tr("settings.tabs.general", "General");
+                root.settingsStore.translationVersion;
+                return root.settingsStore.tr("settings.tabs.general", "General");
             }
             tabIndex: 0
             checked: tabBar.currentIndex === 0
@@ -34,8 +35,8 @@ ColumnLayout {
 
         NTabButton {
             text: {
-                root.settingsState.translationVersion;
-                return root.settingsState.tr("settings.tabs.appearance", "Appearance");
+                root.settingsStore.translationVersion;
+                return root.settingsStore.tr("settings.tabs.appearance", "Appearance");
             }
             tabIndex: 1
             checked: tabBar.currentIndex === 1
@@ -43,8 +44,8 @@ ColumnLayout {
 
         NTabButton {
             text: {
-                root.settingsState.translationVersion;
-                return root.settingsState.tr("settings.tabs.keybinds", "Keybinds");
+                root.settingsStore.translationVersion;
+                return root.settingsStore.tr("settings.tabs.keybinds", "Keybinds");
             }
             tabIndex: 2
             checked: tabBar.currentIndex === 2
@@ -63,15 +64,18 @@ ColumnLayout {
         currentIndex: tabBar.currentIndex
 
         SettingsTabs.GeneralTab {
-            settingsState: root.settingsState
+            settingsStore: root.settingsStore
+            settingsForm: root.settingsForm
         }
 
         SettingsTabs.AppearanceTab {
-            settingsState: root.settingsState
+            settingsStore: root.settingsStore
+            settingsForm: root.settingsForm
         }
 
         SettingsTabs.KeybindsTab {
-            settingsState: root.settingsState
+            settingsStore: root.settingsStore
+            settingsForm: root.settingsForm
         }
     }
 }

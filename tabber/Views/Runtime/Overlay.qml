@@ -7,7 +7,8 @@ Item {
     required property var controller
     required property var session
     required property var groupModel
-    required property var settingsState
+    required property var selectionModel
+    required property var settingsStore
 
     Variants {
         model: Quickshell.screens
@@ -24,7 +25,8 @@ Item {
                 controller: root.controller
                 session: root.session
                 groupModel: root.groupModel
-                settingsState: root.settingsState
+                selectionModel: root.selectionModel
+                settingsStore: root.settingsStore
             }
         }
     }

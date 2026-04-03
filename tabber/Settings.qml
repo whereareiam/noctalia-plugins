@@ -15,18 +15,25 @@ ColumnLayout {
     implicitWidth: preferredWidth
 
     function saveSettings() {
-        settingsState.saveSettings();
+        settingsForm.saveSettings();
     }
 
-    SettingsModels.SettingsState {
-        id: settingsState
+    SettingsModels.SettingsStore {
+        id: settingsStore
 
         pluginApi: root.pluginApi
     }
 
+    SettingsModels.SettingsForm {
+        id: settingsForm
+
+        settingsStore: settingsStore
+    }
+
     SettingsViews.SettingsView {
         Layout.fillWidth: true
-        settingsState: settingsState
+        settingsStore: settingsStore
+        settingsForm: settingsForm
         preferredWidth: root.preferredWidth
     }
 }

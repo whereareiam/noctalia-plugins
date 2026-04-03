@@ -1,13 +1,15 @@
 import QtQuick
 import QtQuick.Layouts
 
+import "../Sections" as SettingsSections
 import qs.Commons
 import qs.Widgets
 
 ColumnLayout {
     id: root
 
-    required property var settingsState
+    required property var settingsStore
+    required property var settingsForm
 
     width: parent ? parent.width : implicitWidth
     spacing: Style.marginL
@@ -15,8 +17,8 @@ ColumnLayout {
     NText {
         Layout.fillWidth: true
         text: {
-            root.settingsState.translationVersion;
-            return root.settingsState.tr("settings.general.title", "General");
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.title", "General");
         }
         pointSize: Style.fontSizeXL
         font.weight: Style.fontWeightBold
@@ -26,40 +28,16 @@ ColumnLayout {
     NText {
         Layout.fillWidth: true
         text: {
-            root.settingsState.translationVersion;
-            return root.settingsState.tr("settings.general.intro", "Grouped app switcher overlay for Alt-Tab style navigation. The Hyprland side is already wired to the bundled Tabber trigger/action scripts.");
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.intro", "Grouped app switcher overlay for Alt-Tab style navigation. Global hotkeys and custom actions stay outside the core plugin and are wired through Hyprland or scripts.");
         }
         pointSize: Style.fontSizeM
         color: Color.mOnSurfaceVariant
         wrapMode: Text.WordWrap
     }
 
-    NToggle {
-        Layout.fillWidth: true
-        label: {
-            root.settingsState.translationVersion;
-            return root.settingsState.tr("settings.general.groupByApp.label", "Group windows by app");
-        }
-        description: {
-            root.settingsState.translationVersion;
-            return root.settingsState.tr("settings.general.groupByApp.description", "When enabled, multiple windows from the same app appear as one item. Disable it for normal per-window switching.");
-        }
-        checked: root.settingsState.editGroupWindowsByApp
-        onToggled: checked => root.settingsState.editGroupWindowsByApp = checked
+    SettingsSections.GeneralBehaviorSection {
+        settingsStore: root.settingsStore
+        generalForm: root.settingsForm.general
     }
-
-    NToggle {
-        Layout.fillWidth: true
-        label: {
-            root.settingsState.translationVersion;
-            return root.settingsState.tr("settings.general.showHidden.label", "Show hidden windows");
-        }
-        description: {
-            root.settingsState.translationVersion;
-            return root.settingsState.tr("settings.general.showHidden.description", "When enabled, hidden windows stay visible in Tabber and selecting them restores them from hidden.");
-        }
-        checked: root.settingsState.editShowHiddenWindows
-        onToggled: checked => root.settingsState.editShowHiddenWindows = checked
-    }
-
 }

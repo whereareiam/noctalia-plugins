@@ -1,7 +1,5 @@
 import QtQuick
-import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Io
 
 import "../../Utils/GroupUtils.js" as GroupUtils
 import qs.Commons
@@ -12,22 +10,11 @@ QtObject {
     id: root
 
     required property var session
-    required property var settingsState
+    required property var settingsStore
 
     property var groupList: []
-    property var displayGroups: []
-    property var hiddenEntries: []
     property var recentGroupIds: []
     property var lastFocusedWindowByGroup: ({})
-
-    readonly property string hiddenStatePath: {
-        var runtimeDir = Quickshell.env("XDG_RUNTIME_DIR");
-        var uid = Quickshell.env("UID");
-        if (!runtimeDir && uid) {
-            runtimeDir = "/run/user/" + uid;
-        }
-        return runtimeDir ? (runtimeDir + "/hypr-hidden-window/hidden-windows.json") : "";
-    }
 
     function getFocusedWindow() {
         for (var i = 0; i < CompositorService.windows.count; i++) {
@@ -44,18 +31,13 @@ QtObject {
         return focused ? groupIdForWindow(focused) : "";
     }
 
-    function reloadHiddenEntries() {
-        if (!hiddenStateView.path) {
-            hiddenEntries = [];
-            return;
+    function normalizeWindowId(windowId) {
+        var normalizedId = String(windowId || "").trim().toLowerCase();
+        if (!normalizedId) {
+            return "";
         }
 
-        try {
-            var parsed = JSON.parse(hiddenStateView.text());
-            hiddenEntries = Array.isArray(parsed) ? parsed : [];
-        } catch (e) {
-            hiddenEntries = [];
-        }
+        return normalizedId.indexOf("0x") === 0 ? normalizedId : ("0x" + normalizedId);
     }
 
     function groupIdForWindow(win) {
@@ -63,62 +45,69 @@ QtObject {
             return "";
         }
 
-        if (settingsState && settingsState.groupWindowsByApp === false) {
+        if (settingsStore && settingsStore.general.groupWindowsByApp === false) {
             return "window-" + GroupUtils.normalizeGroupId(win.id);
         }
 
         return GroupUtils.normalizeGroupId(win.appId || win.title || win.id);
     }
 
-    function groupIdForHiddenEntry(entry) {
-        if (!entry) {
-            return "";
-        }
-
-        if (settingsState && settingsState.groupWindowsByApp === false) {
-            return "window-" + GroupUtils.normalizeGroupId(entry.address);
-        }
-
-        return GroupUtils.normalizeGroupId(entry.app_id || entry.title || entry.address);
-    }
-
     function findWindowById(windowId) {
+        var normalizedWindowId = normalizeWindowId(windowId);
         for (var i = 0; i < CompositorService.windows.count; i++) {
             var win = CompositorService.windows.get(i);
-            if (win && win.id === windowId) {
+            if (!win) {
+                continue;
+            }
+
+            if (win.id === windowId || normalizeWindowId(win.id) === normalizedWindowId) {
                 return win;
             }
         }
         return null;
     }
 
-    function hiddenEntryById(windowId) {
-        var targetId = String(windowId || "");
-        for (var i = 0; i < hiddenEntries.length; i++) {
-            if (String(hiddenEntries[i].address || "") === targetId) {
-                return hiddenEntries[i];
-            }
-        }
-        return null;
-    }
-
-    function isHiddenWindowId(windowId) {
-        return !!hiddenEntryById(windowId);
-    }
-
     function findHyprlandToplevel(windowId) {
-        if (!windowId || !Hyprland.toplevels || !Hyprland.toplevels.values) {
+        var normalizedWindowId = normalizeWindowId(windowId);
+        if (!normalizedWindowId || !Hyprland.toplevels || !Hyprland.toplevels.values) {
             return null;
         }
 
         for (var i = 0; i < Hyprland.toplevels.values.length; i++) {
             var toplevel = Hyprland.toplevels.values[i];
-            if (toplevel && String(toplevel.address || "") === String(windowId)) {
+            if (toplevel && normalizeWindowId(toplevel.address) === normalizedWindowId) {
                 return toplevel;
             }
         }
 
         return null;
+    }
+
+    function dimensionValue(value) {
+        var numericValue = Number(value);
+        return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
+    }
+
+    function windowDimensionsFor(win) {
+        var width = dimensionValue(win ? win.width : 0);
+        var height = dimensionValue(win ? win.height : 0);
+        if (width > 0 && height > 0) {
+            return {
+                width: width,
+                height: height
+            };
+        }
+
+        var toplevel = findHyprlandToplevel(win ? win.id : "");
+        if (toplevel && toplevel.lastIpcObject && Array.isArray(toplevel.lastIpcObject.size) && toplevel.lastIpcObject.size.length >= 2) {
+            width = dimensionValue(toplevel.lastIpcObject.size[0]);
+            height = dimensionValue(toplevel.lastIpcObject.size[1]);
+        }
+
+        return {
+            width: width,
+            height: height
+        };
     }
 
     function isSwitchableWindow(win) {
@@ -182,19 +171,38 @@ QtObject {
         lastFocusedWindowByGroup = updatedLastFocused;
     }
 
+    function activeOutputName() {
+        if (!settingsStore || settingsStore.general.restrictToCurrentMonitor !== true) {
+            return "";
+        }
+
+        return String(session && session.activeScreenName || "").trim();
+    }
+
+    function shouldIncludeVisibleWindow(win, targetOutputName) {
+        if (!isSwitchableWindow(win)) {
+            return false;
+        }
+
+        if (!targetOutputName) {
+            return true;
+        }
+
+        return String(win && win.output || "").trim() === targetOutputName;
+    }
+
     function buildGroups() {
         var groupsById = ({});
         var seenIds = [];
-        var visibleWindowIds = ({});
+        var targetOutputName = activeOutputName();
 
         for (var i = 0; i < CompositorService.windows.count; i++) {
             var win = CompositorService.windows.get(i);
-            if (!isSwitchableWindow(win)) {
+            if (!shouldIncludeVisibleWindow(win, targetOutputName)) {
                 continue;
             }
 
-            visibleWindowIds[String(win.id || "")] = true;
-
+            var windowDimensions = windowDimensionsFor(win);
             var groupId = groupIdForWindow(win);
             if (!groupsById[groupId]) {
                 groupsById[groupId] = {
@@ -202,7 +210,8 @@ QtObject {
                     appId: win.appId || "",
                     iconSource: ThemeIcons.iconForAppId(win.appId || ""),
                     windows: [],
-                    hasFocusedWindow: false
+                    hasFocusedWindow: false,
+                    hasVisibleWindow: false
                 };
                 seenIds.push(groupId);
             }
@@ -213,74 +222,56 @@ QtObject {
                 appId: win.appId || "",
                 workspaceId: win.workspaceId,
                 output: win.output || "",
-                isFocused: win.isFocused === true
+                isFocused: win.isFocused === true,
+                width: windowDimensions.width,
+                height: windowDimensions.height
             });
 
             if (win.isFocused) {
                 groupsById[groupId].hasFocusedWindow = true;
             }
+            groupsById[groupId].hasVisibleWindow = true;
 
-            if (settingsState && settingsState.groupWindowsByApp === false) {
+            if (settingsStore && settingsStore.general.groupWindowsByApp === false) {
                 groupsById[groupId].primaryWindowId = win.id;
                 groupsById[groupId].primaryTitle = win.title || win.appId || "Untitled";
             }
         }
 
-        for (var hiddenIndex = 0; hiddenIndex < hiddenEntries.length; hiddenIndex++) {
-            if (!settingsState || settingsState.showHiddenWindows !== true) {
-                break;
-            }
-
-            var hiddenEntry = hiddenEntries[hiddenIndex];
-            var hiddenId = String(hiddenEntry && hiddenEntry.address || "");
-            if (!hiddenId || visibleWindowIds[hiddenId]) {
+        var orderedVisibleIds = [];
+        var orderedHiddenIds = [];
+        for (var recentIndex = 0; recentIndex < recentGroupIds.length; recentIndex++) {
+            var recentGroupId = recentGroupIds[recentIndex];
+            var recentGroup = groupsById[recentGroupId];
+            if (!recentGroup) {
                 continue;
             }
 
-            var hiddenGroupId = groupIdForHiddenEntry(hiddenEntry);
-            if (!groupsById[hiddenGroupId]) {
-                groupsById[hiddenGroupId] = {
-                    groupId: hiddenGroupId,
-                    appId: hiddenEntry.app_id || "",
-                    iconSource: ThemeIcons.iconForAppId(hiddenEntry.app_id || ""),
-                    windows: [],
-                    hasFocusedWindow: false
-                };
-                seenIds.push(hiddenGroupId);
-            }
-
-            groupsById[hiddenGroupId].windows.push({
-                id: hiddenId,
-                title: hiddenEntry.title || hiddenEntry.app_id || "Hidden window",
-                appId: hiddenEntry.app_id || "",
-                workspaceId: hiddenEntry.workspace || "",
-                output: "",
-                isFocused: false,
-                isHidden: true
-            });
-
-            if (settingsState && settingsState.groupWindowsByApp === false) {
-                groupsById[hiddenGroupId].primaryWindowId = hiddenId;
-                groupsById[hiddenGroupId].primaryTitle = hiddenEntry.title || hiddenEntry.app_id || "Hidden window";
-            }
-        }
-
-        var orderedIds = [];
-        for (var recentIndex = 0; recentIndex < recentGroupIds.length; recentIndex++) {
-            if (groupsById[recentGroupIds[recentIndex]]) {
-                orderedIds.push(recentGroupIds[recentIndex]);
+            if (recentGroup.hasVisibleWindow === true) {
+                orderedVisibleIds.push(recentGroupId);
+            } else {
+                orderedHiddenIds.push(recentGroupId);
             }
         }
 
         for (var seenIndex = 0; seenIndex < seenIds.length; seenIndex++) {
-            if (orderedIds.indexOf(seenIds[seenIndex]) === -1) {
-                orderedIds.push(seenIds[seenIndex]);
+            var seenGroupId = seenIds[seenIndex];
+            var seenGroup = groupsById[seenGroupId];
+            if (!seenGroup) {
+                continue;
+            }
+
+            var targetBucket = seenGroup.hasVisibleWindow === true ? orderedVisibleIds : orderedHiddenIds;
+            if (targetBucket.indexOf(seenGroupId) === -1) {
+                targetBucket.push(seenGroupId);
             }
         }
 
+        var orderedIds = orderedVisibleIds.concat(orderedHiddenIds);
+
         return orderedIds.map(function (groupId) {
             var group = groupsById[groupId];
-            if (settingsState && settingsState.groupWindowsByApp === false) {
+            if (settingsStore && settingsStore.general.groupWindowsByApp === false) {
                 return {
                     groupId: group.groupId,
                     appId: group.appId,
@@ -309,87 +300,8 @@ QtObject {
         });
     }
 
-    function refresh(keepSelection) {
+    function refresh() {
         groupList = buildGroups();
-
-        if (groupList.length === 0) {
-            session.selectedGroupId = "";
-            session.selectedGroup = null;
-            displayGroups = [];
-            return false;
-        }
-
-        if (!keepSelection || !session.selectedGroupId) {
-            session.selectedGroupId = groupList[0].groupId;
-        } else {
-            var stillExists = groupList.some(function (group) {
-                return group.groupId === session.selectedGroupId;
-            });
-            if (!stillExists) {
-                session.selectedGroupId = groupList[0].groupId;
-            }
-        }
-
-        updateDisplayGroups();
-        return true;
-    }
-
-    function updateDisplayGroups() {
-        if (groupList.length === 0) {
-            displayGroups = [];
-            session.selectedGroup = null;
-            return;
-        }
-
-        var matchedGroup = null;
-        for (var i = 0; i < groupList.length; i++) {
-            if (groupList[i].groupId === session.selectedGroupId) {
-                matchedGroup = groupList[i];
-                break;
-            }
-        }
-
-        displayGroups = groupList.slice();
-        session.selectedGroup = matchedGroup || displayGroups[0] || null;
-    }
-
-    function moveSelection(direction, forceFromFocused) {
-        if (groupList.length === 0) {
-            return;
-        }
-
-        var orderedIds = groupList.map(function (group) {
-            return group.groupId;
-        });
-        var anchorId = forceFromFocused ? getCurrentFocusedGroupId() : session.selectedGroupId;
-        var currentIndex = orderedIds.indexOf(anchorId);
-        if (currentIndex < 0) {
-            currentIndex = 0;
-        }
-
-        var step = direction === "previous" ? -1 : 1;
-        var nextIndex = (currentIndex + step + orderedIds.length) % orderedIds.length;
-        session.selectedGroupId = orderedIds[nextIndex];
-        updateDisplayGroups();
-    }
-
-  property FileView hiddenStateView: FileView {
-    id: hiddenStateView
-
-    path: root.hiddenStatePath || undefined
-    printErrors: false
-    watchChanges: true
-
-        onLoaded: {
-            root.reloadHiddenEntries();
-            root.refresh(true);
-        }
-
-        onFileChanged: reload()
-
-        onLoadFailed: {
-            root.hiddenEntries = [];
-            root.refresh(true);
-        }
+        return groupList.length > 0;
     }
 }

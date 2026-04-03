@@ -17,43 +17,56 @@
   },
   "metadata": {
     "defaultSettings": {
-      "groupWindowsByApp": true,
-      "showHiddenWindows": true,
-      "dimOpacity": 0.36,
-      "cardSize": 108,
-      "cardGap": 9,
-      "iconSize": 64,
-      "containerWidth": 0,
-      "containerPadding": 18,
-      "containerPaddingLinked": true,
-      "containerPaddingTop": 18,
-      "containerPaddingRight": 18,
-      "containerPaddingBottom": 18,
-      "containerPaddingLeft": 18,
-      "showHeader": true,
-      "headerAlignment": "space-between",
-      "headerPadding": 0,
-      "headerPaddingLinked": true,
-      "headerPaddingTop": 0,
-      "headerPaddingRight": 0,
-      "headerPaddingBottom": 0,
-      "headerPaddingLeft": 0,
-      "headerText": "Tabber",
-      "showWindowCount": true,
-      "titleVisibility": "selected",
-      "titleTruncationMode": "end",
-      "actions": [
-        {
-          "id": "close",
-          "keybind": "Alt+Q",
-          "script": "scripts/close-selected-group.sh"
+      "general": {
+        "groupWindowsByApp": true,
+        "restrictToCurrentMonitor": false
+      },
+      "appearance": {
+        "dimOpacity": 0.36,
+        "container": {
+          "width": 0,
+          "padding": {
+            "linked": true,
+            "top": 18,
+            "right": 18,
+            "bottom": 18,
+            "left": 18
+          }
         },
-        {
-          "id": "hide",
-          "keybind": "Alt+H",
-          "script": "scripts/hide-selected-group.sh"
+        "header": {
+          "show": true,
+          "alignment": "space-between",
+          "text": "Tabber",
+          "showWindowCount": true,
+          "padding": {
+            "linked": true,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "selection": {
+          "cardSize": 108,
+          "cardGap": 9,
+          "iconSize": 64,
+          "titleVisibility": "selected",
+          "titleTruncationMode": "end"
         }
-      ]
+      },
+      "preview": {
+        "enabled": false
+      },
+      "actions": {
+        "items": [
+          {
+            "id": "close",
+            "label": "Close",
+            "overlayKeybind": "Alt+Q",
+            "script": "scripts/close-selected-group.sh"
+          }
+        ]
+      }
     }
   }
 }

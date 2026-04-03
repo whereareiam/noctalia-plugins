@@ -46,26 +46,17 @@ function humanizeIdentifier(value) {
   });
 }
 
-function createSeedActions(closeKeybind, closeScript, hideKeybind, hideScript) {
-  return [
-    {
-      id: "close",
-      keybind: String(closeKeybind || ""),
-      script: String(closeScript || "")
-    },
-    {
-      id: "hide",
-      keybind: String(hideKeybind || ""),
-      script: String(hideScript || "")
-    }
-  ];
-}
-
 function normalizeAction(action, index) {
   var normalized = action || ({});
+  var overlayKeybind = normalized.overlayKeybind;
+  if ((overlayKeybind === undefined || overlayKeybind === null || overlayKeybind === "") && normalized.keybind !== undefined && normalized.keybind !== null) {
+    overlayKeybind = normalized.keybind;
+  }
+
   return {
     id: String(normalized.id || ("action-" + index)),
-    keybind: String(normalized.keybind || ""),
+    label: String(normalized.label || ""),
+    overlayKeybind: String(overlayKeybind || ""),
     script: String(normalized.script || "")
   };
 }
@@ -80,17 +71,19 @@ function makeActionId() {
 
 function actionDisplayName(action, index) {
   var normalized = normalizeAction(action, index);
-
-  if (normalized.id === "close") {
-    return "Close Selected Group";
-  }
-  if (normalized.id === "hide") {
-    return "Hide Selected Group";
+  var configuredLabel = String(normalized.label || "").trim();
+  if (configuredLabel) {
+    return configuredLabel;
   }
 
   var scriptLabel = humanizeIdentifier(stripExtension(basename(normalized.script)));
   if (scriptLabel) {
     return scriptLabel;
+  }
+
+  var idLabel = humanizeIdentifier(normalized.id);
+  if (idLabel) {
+    return idLabel;
   }
 
   return "Custom Action " + (index + 1);
@@ -103,11 +96,7 @@ function tabberActionDisplayName(action, index) {
 function shortcutNameSegment(action, index) {
   var normalized = normalizeAction(action, index);
 
-  if (normalized.id === "close" || normalized.id === "hide") {
-    return normalized.id;
-  }
-
-  var source = stripExtension(basename(normalized.script));
+  var source = String(normalized.id || "").trim() || stripExtension(basename(normalized.script));
   var slug = String(source || "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -120,18 +109,18 @@ function shortcutNameSegment(action, index) {
   return slug + "-" + (index + 1);
 }
 
-function firstActionSource(configuredActions, defaultActions, seedActions) {
+function firstActionSource(configuredActions, defaultActions) {
   if (Array.isArray(configuredActions)) {
     return configuredActions;
   }
   if (Array.isArray(defaultActions) && defaultActions.length > 0) {
     return defaultActions;
   }
-  return seedActions || [];
+  return [];
 }
 
-function resolveConfiguredActions(pluginApi, configuredActions, defaultActions, seedActions) {
-  var source = firstActionSource(configuredActions, defaultActions, seedActions);
+function resolveConfiguredActions(pluginApi, configuredActions, defaultActions) {
+  var source = firstActionSource(configuredActions, defaultActions);
   var actions = [];
   for (var i = 0; i < source.length; i++) {
     var action = normalizeAction(source[i], i);
@@ -142,7 +131,8 @@ function resolveConfiguredActions(pluginApi, configuredActions, defaultActions, 
 
     actions.push({
       id: action.id,
-      keybind: action.keybind,
+      label: action.label,
+      overlayKeybind: action.overlayKeybind,
       script: scriptPath
     });
   }

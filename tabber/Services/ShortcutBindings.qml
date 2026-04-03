@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 
-import "../../Utils/ActionUtils.js" as ActionUtils
+import "../Utils/ActionUtils.js" as ActionUtils
 
 Item {
     id: root
@@ -168,7 +168,7 @@ Item {
 
     Instantiator {
         active: root.controller && root.controller.session && root.controller.session.overlayVisible && root.controller.actionRegistry
-        model: root.controller && root.controller.actionRegistry ? root.controller.actionRegistry.actions : []
+        model: root.controller && root.controller.actionRegistry ? root.controller.actionRegistry.overlayShortcutActions : []
 
         delegate: GlobalShortcut {
             required property var modelData
@@ -177,7 +177,7 @@ Item {
             appid: "tabber"
             name: "overlay-action-" + ActionUtils.shortcutNameSegment(modelData, index)
             description: ActionUtils.tabberActionDisplayName(modelData, index)
-            triggerDescription: String(modelData.keybind || "")
+            triggerDescription: String(modelData.overlayKeybind || "")
             onPressed: root.controller.runActionById(String(modelData.id || ""))
         }
     }

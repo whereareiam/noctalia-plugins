@@ -5,9 +5,12 @@ import "../../Utils/GroupUtils.js" as GroupUtils
 QtObject {
     id: root
 
-    required property var settingsState
+    required property var settingsStore
 
-    readonly property var actions: settingsState ? settingsState.configuredActions : []
+    readonly property var actions: settingsStore ? settingsStore.actions.configuredActions : []
+    readonly property var overlayShortcutActions: actions.filter(function (action) {
+        return String(action && action.overlayKeybind || "").trim() !== "";
+    })
 
     function findById(actionId) {
         for (var i = 0; i < actions.length; i++) {
@@ -18,9 +21,9 @@ QtObject {
         return null;
     }
 
-    function findByKeybind(keybind) {
+    function findByOverlayKeybind(keybind) {
         for (var i = 0; i < actions.length; i++) {
-            if (actions[i].keybind === keybind) {
+            if (actions[i].overlayKeybind === keybind) {
                 return actions[i];
             }
         }

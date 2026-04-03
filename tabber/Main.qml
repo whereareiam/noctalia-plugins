@@ -83,6 +83,7 @@ Item {
         settingsStore: settingsStore
         session: session
         windowCatalog: windowCatalog
+        integrationRegistry: integrationRegistry
         groupModel: groupModel
         selectionModel: selectionModel
         actionRegistry: actionRegistry
@@ -111,6 +112,18 @@ Item {
 
         function onWindowListChanged() {
             controller.handleWindowListChanged();
+        }
+    }
+
+    Connections {
+        target: session
+
+        function onOverlayVisibleChanged() {
+            controller.publishSelectionContext();
+        }
+
+        function onSelectedGroupChanged() {
+            controller.publishSelectionContext();
         }
     }
 }

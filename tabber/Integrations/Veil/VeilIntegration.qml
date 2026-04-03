@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 
 import "../../Utils/GroupUtils.js" as GroupUtils
 import "../IntegrationTypes.js" as IntegrationTypes
@@ -13,6 +14,8 @@ QtObject {
 
     readonly property string id: "veil"
     readonly property string title: "Veil"
+    readonly property string selectionTargetProviderId: "tabber-overlay"
+    readonly property int selectionTargetPriority: 100
     readonly property bool enabled: settingsStore && settingsStore.integrations && settingsStore.integrations.veil.enabled === true
     readonly property bool available: pluginState ? pluginState.isAvailable : false
     readonly property bool highlightHiddenCards: settingsStore && settingsStore.integrations && settingsStore.integrations.veil.highlightHiddenCards === true
@@ -69,5 +72,60 @@ QtObject {
 
         hiddenWindowsSource.restoreWindow(entry.primaryWindowId || entry.id || "");
         return true;
+    }
+
+    function clearSelectionTarget() {
+        Quickshell.execDetached(["qs", "ipc", "-c", "noctalia-shell", "call", "plugin:veil", "clearTarget", selectionTargetProviderId]);
+    }
+
+    function publishSelectionTarget(windowId, groupId, metadata) {
+        Quickshell.execDetached([
+            "qs",
+            "ipc",
+            "-c",
+            "noctalia-shell",
+            "call",
+            "plugin:veil",
+            "publishTarget",
+            selectionTargetProviderId,
+            String(selectionTargetPriority),
+            String(windowId || ""),
+            String(groupId || ""),
+            JSON.stringify(metadata || ({}))
+        ]);
+    }
+
+    function syncSelectionTarget(groupData, context) {
+        if (!enabled || !available) {
+            return;
+        }
+
+        if (!context || context.overlayVisible !== true || !groupData) {
+            clearSelectionTarget();
+            return;
+        }
+
+        var targetWindowId = String(context.targetWindowId || "");
+        if (!targetWindowId) {
+            clearSelectionTarget();
+            return;
+        }
+
+        publishSelectionTarget(targetWindowId, String(groupData.groupId || ""), {
+            appId: String(groupData.appId || ""),
+            integrationId: String(groupData.integrationId || "")
+        });
+    }
+
+    onEnabledChanged: {
+        if (!enabled) {
+            clearSelectionTarget();
+        }
+    }
+
+    onAvailableChanged: {
+        if (!available) {
+            clearSelectionTarget();
+        }
     }
 }

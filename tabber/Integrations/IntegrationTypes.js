@@ -22,3 +22,16 @@ function normalizeEntry(entry) {
     integrationAction: String(entry.integrationAction || "")
   };
 }
+
+function normalizeGroupAction(action, integrationId) {
+  if (!action) {
+    return null;
+  }
+
+  return {
+    id: String(action.id || ""),
+    label: String(action.label || ""),
+    overlayKeybind: String(action.overlayKeybind || ""),
+    integrationId: String(action.integrationId || integrationId || "")
+  };
+}

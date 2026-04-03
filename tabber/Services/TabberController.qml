@@ -13,6 +13,7 @@ QtObject {
     required property var settingsStore
     required property var session
     required property var windowCatalog
+    required property var integrationRegistry
     required property var groupModel
     required property var selectionModel
     required property var actionRegistry
@@ -21,6 +22,7 @@ QtObject {
 
     function initialize() {
         syncGroupModelWithFocus();
+        publishSelectionContext();
     }
 
     function refreshGroups(keepSelection) {
@@ -63,6 +65,7 @@ QtObject {
 
     function hideOverlay(resetModifier) {
         session.markHidden(resetModifier);
+        publishSelectionContext();
     }
 
     function groupedWindowArea(windowData) {
@@ -225,6 +228,74 @@ QtObject {
         Quickshell.execDetached([actionDefinition.script, JSON.stringify(actionRegistry.buildWindowPayload(actionId, win))]);
     }
 
+    function targetWindowIdForGroupAction(groupData) {
+        if (!groupData) {
+            return "";
+        }
+
+        if (groupData.isIntegrationEntry === true) {
+            return String(groupData.primaryWindowId || "");
+        }
+
+        var groupedSelection = settingsStore.general.groupWindowsByApp && groupData.windows && groupData.windows.length > 1;
+        return groupedSelection ? frontWindowIdForGroupedSelection(groupData) : String(groupData.primaryWindowId || "");
+    }
+
+    function publishSelectionContext() {
+        if (!integrationRegistry) {
+            return false;
+        }
+
+        integrationRegistry.syncSelectionTarget(session ? session.selectedGroup : null, {
+            overlayVisible: session ? session.overlayVisible === true : false,
+            targetWindowId: targetWindowIdForGroupAction(session ? session.selectedGroup : null)
+        });
+        return true;
+    }
+
+    function integrationActionFromKeybind(keybind) {
+        if (!integrationRegistry || !session.selectedGroup) {
+            return null;
+        }
+
+        var normalizedKeybind = String(keybind || "").trim();
+        if (!normalizedKeybind) {
+            return null;
+        }
+
+        var matchedAction = integrationRegistry.findGroupActionByOverlayKeybind(session.selectedGroup, normalizedKeybind);
+        if (matchedAction || !session.modifierHeld || !session.activeModifierPrefix) {
+            return matchedAction;
+        }
+
+        if (normalizedKeybind.indexOf(session.activeModifierPrefix + "+") === 0) {
+            return null;
+        }
+
+        return integrationRegistry.findGroupActionByOverlayKeybind(session.selectedGroup, session.activeModifierPrefix + "+" + normalizedKeybind);
+    }
+
+    function runIntegrationGroupAction(action, groupData) {
+        if (!integrationRegistry || !action || !groupData) {
+            return false;
+        }
+
+        var actionContext = {
+            targetWindowId: targetWindowIdForGroupAction(groupData)
+        };
+        var didRun = integrationRegistry.runGroupAction(action, groupData, actionContext);
+        if (!didRun) {
+            return false;
+        }
+
+        Qt.callLater(function () {
+            if (!refreshGroups(true) && session.overlayVisible) {
+                hideOverlay(false);
+            }
+        });
+        return true;
+    }
+
     function handleGlobalModifierRelease(key) {
         session.markModifierReleased(key, "modifier-release-global", Date.now());
 
@@ -316,11 +387,8 @@ QtObject {
             return true;
         }
 
-        if (Keybinds.getKeybindString(event) === "Super+H"
-                && session.selectedGroup
-                && session.selectedGroup.isIntegrationEntry === true
-                && selectedGroupHasHiddenWindows()) {
-            acceptSelection();
+        var integrationAction = integrationActionFromKeybind(Keybinds.getKeybindString(event));
+        if (integrationAction && runIntegrationGroupAction(integrationAction, session.selectedGroup)) {
             return true;
         }
 

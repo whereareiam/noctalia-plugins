@@ -83,6 +83,19 @@ Item {
         Quickshell.execDetached(["qs", "ipc", "-c", "noctalia-shell", "call", "plugin:veil", "restore", normalizedAddress]);
     }
 
+    function hideWindow(address) {
+        if (!veilPluginState || !veilPluginState.isAvailable) {
+            return;
+        }
+
+        var normalizedAddress = normalizeAddress(address);
+        if (!normalizedAddress) {
+            return;
+        }
+
+        Quickshell.execDetached(["qs", "ipc", "-c", "noctalia-shell", "call", "plugin:veil", "hide", normalizedAddress]);
+    }
+
     property FileView stateFile: FileView {
         path: root.statePath || undefined
         printErrors: false

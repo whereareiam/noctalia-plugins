@@ -22,6 +22,14 @@ Item {
             return root.controller.restoreWindow(address);
         }
 
+        function publishTarget(providerId: string, priority: int, windowId: string, groupId: string, metadataJson: string): bool {
+            return root.controller.publishTarget(providerId, priority, windowId, groupId, metadataJson);
+        }
+
+        function clearTarget(providerId: string): bool {
+            return root.controller.clearTarget(providerId);
+        }
+
         function openRestoreMenu(): bool {
             return root.controller.openRestoreMenu();
         }

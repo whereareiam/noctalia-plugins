@@ -13,6 +13,7 @@ QtObject {
     required property var stateStore
 
     readonly property string hiddenWorkspaceName: "special:hidden"
+    property var publishedTargets: []
 
     function initialize() {
         Qt.callLater(pruneStaleWindows);
@@ -31,6 +32,107 @@ QtObject {
         }
 
         return null;
+    }
+
+    function normalizeProviderId(providerId) {
+        return String(providerId || "").trim();
+    }
+
+    function publishedTargetEntries() {
+        var entries = [];
+        var targets = Array.isArray(publishedTargets) ? publishedTargets : [];
+        for (var index = 0; index < targets.length; index++) {
+            var target = targets[index];
+            var providerId = normalizeProviderId(target && target.providerId);
+            var normalizedWindowId = normalizedAddress(target && target.windowId);
+            if (!providerId || !normalizedWindowId) {
+                continue;
+            }
+
+            entries.push({
+                providerId: providerId,
+                priority: Number(target && target.priority || 0),
+                windowId: normalizedWindowId,
+                groupId: String(target && target.groupId || ""),
+                metadata: target && target.metadata ? target.metadata : ({}),
+                updatedAt: Number(target && target.updatedAt || 0)
+            });
+        }
+
+        entries.sort(function (left, right) {
+            var priorityDifference = Number(right.priority || 0) - Number(left.priority || 0);
+            if (priorityDifference !== 0) {
+                return priorityDifference;
+            }
+
+            return Number(right.updatedAt || 0) - Number(left.updatedAt || 0);
+        });
+
+        return entries;
+    }
+
+    function preferredPublishedTarget() {
+        var entries = publishedTargetEntries();
+        return entries.length > 0 ? entries[0] : null;
+    }
+
+    function publishTarget(providerId, priority, windowId, groupId, metadataJson) {
+        var normalizedProviderId = normalizeProviderId(providerId);
+        var normalizedWindowId = normalizedAddress(windowId);
+        if (!normalizedProviderId || !normalizedWindowId) {
+            return false;
+        }
+
+        var metadata = ({});
+        if (metadataJson && String(metadataJson).trim() !== "") {
+            try {
+                var parsedMetadata = JSON.parse(metadataJson);
+                if (parsedMetadata && typeof parsedMetadata === "object") {
+                    metadata = parsedMetadata;
+                }
+            } catch (e) {
+            }
+        }
+
+        var nextTargets = publishedTargetEntries().filter(function (entry) {
+            return entry.providerId !== normalizedProviderId;
+        });
+        nextTargets.push({
+            providerId: normalizedProviderId,
+            priority: Number(priority || 0),
+            windowId: normalizedWindowId,
+            groupId: String(groupId || ""),
+            metadata: metadata,
+            updatedAt: Date.now()
+        });
+        publishedTargets = nextTargets;
+        return true;
+    }
+
+    function clearTarget(providerId) {
+        var normalizedProviderId = normalizeProviderId(providerId);
+        if (!normalizedProviderId) {
+            return false;
+        }
+
+        var currentTargets = publishedTargetEntries();
+        var hadTarget = currentTargets.some(function (entry) {
+            return entry.providerId === normalizedProviderId;
+        });
+        if (!hadTarget) {
+            return false;
+        }
+
+        var nextTargets = currentTargets.filter(function (entry) {
+            return entry.providerId !== normalizedProviderId;
+        });
+        publishedTargets = nextTargets;
+        return true;
+    }
+
+    function selectedWindowAddress() {
+        var target = preferredPublishedTarget();
+        return normalizedAddress(target && target.windowId);
     }
 
     function findVisibleWindowByAddress(address) {
@@ -229,13 +331,41 @@ QtObject {
         return true;
     }
 
+    function toggleWindow(address) {
+        var normalized = normalizedAddress(address);
+        if (!normalized) {
+            return false;
+        }
+
+        var visibleWindow = findVisibleWindowByAddress(normalized);
+        if (visibleWindow) {
+            return hideWindow(visibleWindow.id);
+        }
+
+        if (hiddenWindowsModel && hiddenWindowsModel.containsAddress && hiddenWindowsModel.containsAddress(normalized)) {
+            return restoreWindow(normalized);
+        }
+
+        var hiddenToplevel = findToplevelByAddress(normalized);
+        if (isHiddenToplevel(hiddenToplevel)) {
+            return restoreWindow(normalized);
+        }
+
+        return false;
+    }
+
     function toggleFocused() {
+        var selectedAddress = selectedWindowAddress();
+        if (selectedAddress) {
+            return toggleWindow(selectedAddress);
+        }
+
         var focusedWindow = getFocusedVisibleWindow();
         if (!focusedWindow) {
             return false;
         }
 
-        return hideWindow(focusedWindow.id);
+        return toggleWindow(focusedWindow.id);
     }
 
     function openRestoreMenu() {
@@ -269,7 +399,8 @@ QtObject {
         return JSON.stringify({
             hiddenCount: hiddenWindowsModel.hiddenCount,
             loaded: stateStore.loaded,
-            statePath: stateStore.statePath
+            statePath: stateStore.statePath,
+            publishedTargets: publishedTargetEntries()
         });
     }
 }

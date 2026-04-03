@@ -160,3 +160,8 @@ function clearPaths(target, paths) {
 function clamp(value, minValue, maxValue) {
   return Math.max(minValue, Math.min(maxValue, value));
 }
+
+function isHexColorString(value) {
+  var normalizedValue = String(value || "").trim();
+  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(normalizedValue);
+}

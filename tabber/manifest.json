@@ -1,7 +1,7 @@
 {
   "id": "tabber",
   "name": "Tabber",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "minNoctaliaVersion": "3.6.0",
   "author": "whereareiam",
   "license": "MIT",
@@ -19,7 +19,8 @@
     "defaultSettings": {
       "general": {
         "groupWindowsByApp": true,
-        "restrictToCurrentMonitor": false
+        "restrictToCurrentMonitor": false,
+        "requirePointerMovementForHoverSelection": true
       },
       "appearance": {
         "dimOpacity": 0.36,
@@ -56,6 +57,13 @@
       },
       "preview": {
         "enabled": false
+      },
+      "integrations": {
+        "veil": {
+          "enabled": true,
+          "highlightHiddenCards": true,
+          "hiddenCardAccentColor": ""
+        }
       },
       "actions": {
         "items": [

@@ -41,4 +41,18 @@ ColumnLayout {
         checked: root.generalForm.restrictToCurrentMonitor
         onToggled: checked => root.generalForm.restrictToCurrentMonitor = checked
     }
+
+    NToggle {
+        Layout.fillWidth: true
+        label: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.requirePointerMovementForHoverSelection.label", "Require pointer movement for hover selection");
+        }
+        description: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.requirePointerMovementForHoverSelection.description", "When enabled, a stationary mouse cannot change the initial Tabber selection. Hover only starts affecting selection after the pointer moves.");
+        }
+        checked: root.generalForm.requirePointerMovementForHoverSelection
+        onToggled: checked => root.generalForm.requirePointerMovementForHoverSelection = checked
+    }
 }

@@ -1,7 +1,8 @@
 {
   "general": {
     "groupWindowsByApp": true,
-    "restrictToCurrentMonitor": true
+    "restrictToCurrentMonitor": true,
+    "requirePointerMovementForHoverSelection": true
   },
   "appearance": {
     "dimOpacity": 0.36,
@@ -38,6 +39,12 @@
   },
   "preview": {
     "enabled": true
+  },
+  "integrations": {
+    "veil": {
+      "enabled": true,
+      "highlightHiddenCards": true
+    }
   },
   "actions": {
     "items": [

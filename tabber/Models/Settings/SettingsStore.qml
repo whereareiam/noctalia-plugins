@@ -4,6 +4,7 @@ import "../../Utils/SettingsUtils.js" as SettingsUtils
 import "./General" as GeneralSettings
 import "./Appearance" as AppearanceSettings
 import "./Actions" as ActionSettings
+import "./Integrations" as IntegrationSettings
 import "./Preview" as PreviewSettings
 
 QtObject {
@@ -20,6 +21,9 @@ QtObject {
         settingsStore: root
     }
     readonly property QtObject actions: ActionSettings.ActionSettings {
+        settingsStore: root
+    }
+    readonly property QtObject integrations: IntegrationSettings.IntegrationsSettings {
         settingsStore: root
     }
     readonly property QtObject preview: PreviewSettings.PreviewSettings {

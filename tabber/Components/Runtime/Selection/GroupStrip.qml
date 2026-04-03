@@ -14,6 +14,7 @@ ColumnLayout {
     property int iconSize: 64
     property string titleVisibility: "selected"
     property string titleTruncationMode: "end"
+    property bool hoverSelectionEnabled: true
 
     readonly property int gapPx: Math.round(root.cardGap * Style.uiScaleRatio)
     readonly property bool titlesVisible: root.titleVisibility !== "hidden"
@@ -55,6 +56,7 @@ ColumnLayout {
                 groupData: modelData
                 cardSize: root.cardSize
                 iconSizeValue: root.iconSize
+                hoverSelectionEnabled: root.hoverSelectionEnabled
                 selected: modelData.groupId === root.selectedGroupId
                 onHoverSelected: root.groupHovered(modelData.groupId)
                 onActivateSelected: root.groupActivated(modelData.groupId)

@@ -12,6 +12,8 @@ QtObject {
     required property var pluginApi
     required property var settingsStore
     required property var session
+    required property var windowCatalog
+    required property var integrationRegistry
     required property var groupModel
     required property var selectionModel
     required property var actionRegistry
@@ -20,9 +22,11 @@ QtObject {
 
     function initialize() {
         syncGroupModelWithFocus();
+        publishSelectionContext();
     }
 
     function refreshGroups(keepSelection) {
+        windowCatalog.refresh();
         groupModel.refresh();
         return selectionModel.syncSelection(keepSelection);
     }
@@ -61,6 +65,7 @@ QtObject {
 
     function hideOverlay(resetModifier) {
         session.markHidden(resetModifier);
+        publishSelectionContext();
     }
 
     function groupedWindowArea(windowData) {
@@ -133,7 +138,7 @@ QtObject {
         var windowAddress = normalizedWindowId.indexOf("0x") === 0 ? normalizedWindowId : ("0x" + normalizedWindowId);
         Quickshell.execDetached(["bash", "-lc", "sleep 0.08; hyprctl dispatch focuswindow 'address:" + windowAddress + "' >/dev/null 2>&1 || true; hyprctl dispatch alterzorder 'top,address:" + windowAddress + "' >/dev/null 2>&1 || true"]);
 
-        var targetWindow = groupModel.findWindowById(windowId);
+        var targetWindow = windowCatalog.findWindowById(windowId);
         if (targetWindow) {
             CompositorService.focusWindow(targetWindow);
         }
@@ -152,12 +157,43 @@ QtObject {
         hideOverlay(false);
 
         Qt.callLater(function () {
+            if (session.selectedGroup.isIntegrationEntry === true) {
+                activateIntegrationEntry(session.selectedGroup);
+                Qt.callLater(function () {
+                    refreshGroups(true);
+                    focusWindowById(targetWindowId);
+                });
+                return;
+            }
+
             if (groupedSelection) {
                 restackGroupedSelection(session.selectedGroup, targetWindowId);
             } else {
                 focusWindowById(targetWindowId);
             }
         });
+    }
+
+    function activateIntegrationEntry(groupData) {
+        if (!windowCatalog || !groupData || groupData.isIntegrationEntry !== true) {
+            return false;
+        }
+
+        return windowCatalog.activateEntry(groupData);
+    }
+
+    function selectedGroupHasHiddenWindows() {
+        if (!session.selectedGroup || !session.selectedGroup.windows) {
+            return false;
+        }
+
+        for (var index = 0; index < session.selectedGroup.windows.length; index++) {
+            if (session.selectedGroup.windows[index] && session.selectedGroup.windows[index].isHidden === true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function runActionDefinition(actionDefinition) {
@@ -190,6 +226,74 @@ QtObject {
         }
 
         Quickshell.execDetached([actionDefinition.script, JSON.stringify(actionRegistry.buildWindowPayload(actionId, win))]);
+    }
+
+    function targetWindowIdForGroupAction(groupData) {
+        if (!groupData) {
+            return "";
+        }
+
+        if (groupData.isIntegrationEntry === true) {
+            return String(groupData.primaryWindowId || "");
+        }
+
+        var groupedSelection = settingsStore.general.groupWindowsByApp && groupData.windows && groupData.windows.length > 1;
+        return groupedSelection ? frontWindowIdForGroupedSelection(groupData) : String(groupData.primaryWindowId || "");
+    }
+
+    function publishSelectionContext() {
+        if (!integrationRegistry) {
+            return false;
+        }
+
+        integrationRegistry.syncSelectionTarget(session ? session.selectedGroup : null, {
+            overlayVisible: session ? session.overlayVisible === true : false,
+            targetWindowId: targetWindowIdForGroupAction(session ? session.selectedGroup : null)
+        });
+        return true;
+    }
+
+    function integrationActionFromKeybind(keybind) {
+        if (!integrationRegistry || !session.selectedGroup) {
+            return null;
+        }
+
+        var normalizedKeybind = String(keybind || "").trim();
+        if (!normalizedKeybind) {
+            return null;
+        }
+
+        var matchedAction = integrationRegistry.findGroupActionByOverlayKeybind(session.selectedGroup, normalizedKeybind);
+        if (matchedAction || !session.modifierHeld || !session.activeModifierPrefix) {
+            return matchedAction;
+        }
+
+        if (normalizedKeybind.indexOf(session.activeModifierPrefix + "+") === 0) {
+            return null;
+        }
+
+        return integrationRegistry.findGroupActionByOverlayKeybind(session.selectedGroup, session.activeModifierPrefix + "+" + normalizedKeybind);
+    }
+
+    function runIntegrationGroupAction(action, groupData) {
+        if (!integrationRegistry || !action || !groupData) {
+            return false;
+        }
+
+        var actionContext = {
+            targetWindowId: targetWindowIdForGroupAction(groupData)
+        };
+        var didRun = integrationRegistry.runGroupAction(action, groupData, actionContext);
+        if (!didRun) {
+            return false;
+        }
+
+        Qt.callLater(function () {
+            if (!refreshGroups(true) && session.overlayVisible) {
+                hideOverlay(false);
+            }
+        });
+        return true;
     }
 
     function handleGlobalModifierRelease(key) {
@@ -280,6 +384,11 @@ QtObject {
 
         if (event.key === Qt.Key_Escape) {
             hideOverlay(false);
+            return true;
+        }
+
+        var integrationAction = integrationActionFromKeybind(Keybinds.getKeybindString(event));
+        if (integrationAction && runIntegrationGroupAction(integrationAction, session.selectedGroup)) {
             return true;
         }
 

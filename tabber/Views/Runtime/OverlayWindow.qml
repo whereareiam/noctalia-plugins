@@ -15,6 +15,11 @@ PanelWindow {
     required property var selectionModel
     required property var settingsStore
 
+    property bool hoverSelectionUnlocked: !(root.settingsStore && root.settingsStore.general && root.settingsStore.general.requirePointerMovementForHoverSelection === true)
+    property real hoverUnlockOriginX: NaN
+    property real hoverUnlockOriginY: NaN
+    readonly property real hoverUnlockDistancePx: Math.max(4, Math.round(6 * Style.uiScaleRatio))
+
     color: "transparent"
 
     anchors {
@@ -29,9 +34,40 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
+    function updateHoverUnlock(position) {
+        if (root.hoverSelectionUnlocked || !(root.settingsStore && root.settingsStore.general && root.settingsStore.general.requirePointerMovementForHoverSelection === true)) {
+            root.hoverSelectionUnlocked = true;
+            return;
+        }
+
+        var positionX = Number(position && position.x);
+        var positionY = Number(position && position.y);
+        if (!Number.isFinite(positionX) || !Number.isFinite(positionY)) {
+            return;
+        }
+
+        if (!Number.isFinite(root.hoverUnlockOriginX) || !Number.isFinite(root.hoverUnlockOriginY)) {
+            root.hoverUnlockOriginX = positionX;
+            root.hoverUnlockOriginY = positionY;
+            return;
+        }
+
+        var deltaX = positionX - root.hoverUnlockOriginX;
+        var deltaY = positionY - root.hoverUnlockOriginY;
+        if ((deltaX * deltaX) + (deltaY * deltaY) >= (root.hoverUnlockDistancePx * root.hoverUnlockDistancePx)) {
+            root.hoverSelectionUnlocked = true;
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: Qt.alpha(Color.mSurface, Math.max(0.0, Math.min(0.85, root.settingsStore.appearance.dimOpacity)))
+    }
+
+    HoverHandler {
+        id: pointerTracker
+
+        onPointChanged: root.updateHoverUnlock(point.position)
     }
 
     FocusScope {
@@ -71,7 +107,12 @@ PanelWindow {
                 selectedGroup: root.session.selectedGroup
                 selectedGroupId: root.session.selectedGroupId
                 displayGroups: root.selectionModel.displayGroups
-                onGroupHovered: groupId => root.selectionModel.selectGroup(groupId)
+                hoverSelectionEnabled: root.hoverSelectionUnlocked
+                onGroupHovered: groupId => {
+                    if (root.hoverSelectionUnlocked) {
+                        root.selectionModel.selectGroup(groupId);
+                    }
+                }
                 onGroupActivated: groupId => {
                     if (groupId === root.session.selectedGroupId) {
                         root.controller.acceptSelection();

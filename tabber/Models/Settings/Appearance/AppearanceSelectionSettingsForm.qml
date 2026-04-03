@@ -37,7 +37,15 @@ QtObject {
             parsedIconSize = settings.iconSize;
         }
 
-        SettingsUtils.clearPaths(target, ["cardSize", "cardGap", "iconSize", "titleVisibility", "titleTruncationMode"]);
+        SettingsUtils.clearPaths(target, [
+                                    "cardSize",
+                                    "cardGap",
+                                    "iconSize",
+                                    "appearance.selection.highlightHiddenCards",
+                                    "appearance.selection.hiddenCardAccentColor",
+                                    "titleVisibility",
+                                    "titleTruncationMode"
+                                ]);
         SettingsUtils.setPathValue(target, "appearance.selection.cardSize", SettingsUtils.clamp(parsedCardSize, 64, 128));
         SettingsUtils.setPathValue(target, "appearance.selection.cardGap", SettingsUtils.clamp(parsedCardGap, 0, 48));
         SettingsUtils.setPathValue(target, "appearance.selection.iconSize", SettingsUtils.clamp(parsedIconSize, 24, 96));

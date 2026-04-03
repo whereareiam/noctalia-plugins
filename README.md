@@ -54,7 +54,7 @@ These bindings are only examples. Veil does not require specific keybinds.
 <details>
 <summary><strong>Tabber</strong> — macOS like window switcher</summary>
 
-<img width="1293" height="515" alt="Tabber showcase" src=".github/assets/tabber/showcase.png" />
+<img alt="Tabber showcase" src=".github/assets/tabber/showcase.png" />
 
 ### What it does
 

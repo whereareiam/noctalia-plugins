@@ -1,9 +1,20 @@
 {
   "plugins": [
     {
+      "id": "veil",
+      "name": "Veil",
+      "version": "1.0.0",
+      "minNoctaliaVersion": "3.6.0",
+      "author": "whereareiam",
+      "license": "MIT",
+      "repository": "https://github.com/whereareiam/noctalia-plugins",
+      "description": "Hide windows and restore them later from the bar or integrated plugins like Tabber.",
+      "tags": ["Bar", "Utility", "Window Management"]
+    },
+    {
       "id": "tabber",
       "name": "Tabber",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "minNoctaliaVersion": "3.6.0",
       "author": "whereareiam",
       "license": "MIT",

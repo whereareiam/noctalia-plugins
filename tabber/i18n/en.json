@@ -8,7 +8,8 @@
     "tabs": {
       "general": "General",
       "appearance": "Appearance",
-      "keybinds": "Keybinds"
+      "keybinds": "Keybinds",
+      "integrations": "Integrations"
     },
     "general": {
       "title": "General",
@@ -161,6 +162,29 @@
           "labelLabel": "Label",
           "overlayKeybindLabel": "Overlay shortcut",
           "scriptLabel": "Script"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Integrations",
+      "intro": "Configure optional integrations with other plugins. Integrations are only active when the target plugin is installed and enabled.",
+      "veil": {
+        "title": "Veil",
+        "description": "Controls how Tabber presents and restores Veil-managed windows.",
+        "statusMissing": "Veil is not installed or not discovered by Noctalia. Install and enable it before using this integration.",
+        "statusDisabled": "Veil is installed but not enabled in Noctalia. Enable it before using this integration.",
+        "statusAvailable": "Veil is installed and enabled.",
+        "enabled": {
+          "label": "Enable Veil integration",
+          "description": "Show Veil-hidden windows in Tabber and restore them from the overlay."
+        },
+        "highlightHiddenCards": {
+          "label": "Tint hidden cards",
+          "description": "Apply a different color treatment to Veil-hidden entries in Tabber."
+        },
+        "hiddenCardAccentColor": {
+          "label": "Hidden card accent color",
+          "description": "Optional hex color for Veil-hidden cards. Leave empty to derive it from the current Noctalia theme."
         }
       }
     }

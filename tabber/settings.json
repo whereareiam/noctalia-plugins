@@ -39,6 +39,12 @@
   "preview": {
     "enabled": true
   },
+  "integrations": {
+    "veil": {
+      "enabled": true,
+      "highlightHiddenCards": true
+    }
+  },
   "actions": {
     "items": [
       {

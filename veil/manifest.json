@@ -1,0 +1,22 @@
+{
+  "id": "veil",
+  "name": "Veil",
+  "version": "1.0.0",
+  "minNoctaliaVersion": "3.6.0",
+  "author": "whereareiam",
+  "license": "MIT",
+  "repository": "https://github.com/whereareiam/noctalia-plugins",
+  "description": "Hide windows and restore them later from the bar or integrated plugins like Tabber.",
+  "tags": ["Bar", "Utility", "Window Management"],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "Components/Bar/VeilBarWidget.qml",
+    "panel": "Components/Bar/VeilRestoreMenu.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {}
+  }
+}

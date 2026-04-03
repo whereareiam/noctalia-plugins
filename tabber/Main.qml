@@ -1,5 +1,7 @@
 import QtQuick
 
+import "./Integrations" as IntegrationModels
+import "./Integrations/Veil" as VeilIntegrationModels
 import "./Models/Runtime" as RuntimeModels
 import "./Models/Settings" as SettingsModels
 import "./Services" as Services
@@ -26,6 +28,7 @@ Item {
 
         session: session
         settingsStore: settingsStore
+        sourceEntries: windowCatalog.entries
     }
 
     RuntimeModels.SelectionModel {
@@ -35,10 +38,42 @@ Item {
         groupModel: groupModel
     }
 
+    VeilIntegrationModels.VeilPluginState {
+        id: veilPluginState
+    }
+
+    VeilIntegrationModels.VeilHiddenWindowsSource {
+        id: veilHiddenWindowsSource
+
+        veilPluginState: veilPluginState
+    }
+
+    VeilIntegrationModels.VeilIntegration {
+        id: veilIntegration
+
+        settingsStore: settingsStore
+        pluginState: veilPluginState
+        hiddenWindowsSource: veilHiddenWindowsSource
+    }
+
+    IntegrationModels.IntegrationRegistry {
+        id: integrationRegistry
+
+        providers: [veilIntegration]
+    }
+
     RuntimeModels.ActionRegistry {
         id: actionRegistry
 
         settingsStore: settingsStore
+    }
+
+    Services.WindowCatalog {
+        id: windowCatalog
+
+        session: session
+        settingsStore: settingsStore
+        integrationRegistry: integrationRegistry
     }
 
     Services.TabberController {
@@ -47,6 +82,7 @@ Item {
         pluginApi: root.pluginApi
         settingsStore: settingsStore
         session: session
+        windowCatalog: windowCatalog
         groupModel: groupModel
         selectionModel: selectionModel
         actionRegistry: actionRegistry

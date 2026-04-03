@@ -8,7 +8,8 @@
     "tabs": {
       "general": "Allgemein",
       "appearance": "Darstellung",
-      "keybinds": "Tastenkürzel"
+      "keybinds": "Tastenkürzel",
+      "integrations": "Integrationen"
     },
     "general": {
       "title": "Allgemein",
@@ -161,6 +162,29 @@
           "labelLabel": "Bezeichnung",
           "overlayKeybindLabel": "Overlay-Kürzel",
           "scriptLabel": "Skript"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Integrationen",
+      "intro": "Konfiguriere optionale Integrationen mit anderen Plugins. Integrationen sind nur aktiv, wenn das Ziel-Plugin installiert und aktiviert ist.",
+      "veil": {
+        "title": "Veil",
+        "description": "Steuert, wie Tabber von Veil verwaltete Fenster darstellt und wiederherstellt.",
+        "statusMissing": "Veil ist nicht installiert oder wurde von Noctalia nicht erkannt. Installiere und aktiviere es, bevor du diese Integration verwendest.",
+        "statusDisabled": "Veil ist installiert, aber in Noctalia nicht aktiviert. Aktiviere es, bevor du diese Integration verwendest.",
+        "statusAvailable": "Veil ist installiert und aktiviert.",
+        "enabled": {
+          "label": "Veil-Integration aktivieren",
+          "description": "Zeigt von Veil versteckte Fenster in Tabber an und stellt sie aus dem Overlay wieder her."
+        },
+        "highlightHiddenCards": {
+          "label": "Versteckte Karten einfärben",
+          "description": "Wendet eine andere Farbgebung auf von Veil versteckte Einträge in Tabber an."
+        },
+        "hiddenCardAccentColor": {
+          "label": "Akzentfarbe für versteckte Karten",
+          "description": "Optionale Hex-Farbe für von Veil versteckte Karten. Leer lassen, um sie aus dem aktuellen Noctalia-Theme abzuleiten."
         }
       }
     }

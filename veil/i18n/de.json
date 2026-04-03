@@ -1,0 +1,14 @@
+{
+  "bar": {
+    "tooltip": "{count} verstecktes Fenster",
+    "tooltip-plural": "{count} versteckte Fenster",
+    "menu": {
+      "open": "Versteckte Fenster wiederherstellen"
+    }
+  },
+  "panel": {
+    "title": "Versteckte Fenster",
+    "close": "Schließen",
+    "empty": "Keine versteckten Fenster."
+  }
+}

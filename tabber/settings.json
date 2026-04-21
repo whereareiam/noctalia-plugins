@@ -1,6 +1,7 @@
 {
   "general": {
     "groupWindowsByApp": true,
+    "enterGroupedWindowSelection": true,
     "restrictToCurrentMonitor": true,
     "requirePointerMovementForHoverSelection": true
   },

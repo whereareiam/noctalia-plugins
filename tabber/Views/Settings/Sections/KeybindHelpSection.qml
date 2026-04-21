@@ -62,6 +62,7 @@ NBox {
             wrapMode: Text.WrapAnywhere
             text: "bind = ALT, Tab, global, tabber:select-next\n"
                 + "bind = ALT SHIFT, Tab, global, tabber:select-previous\n"
+                + "bind = ALT, Grave, global, tabber:enter-group\n"
                 + "bind = , Alt_L, global, tabber:release-alt-left\n"
                 + "bind = , Alt_R, global, tabber:release-alt-right"
         }

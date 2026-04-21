@@ -105,19 +105,19 @@ PanelWindow {
                 settingsStore: root.settingsStore
                 appearanceSettings: root.settingsStore.appearance
                 selectedGroup: root.session.selectedGroup
-                selectedGroupId: root.session.selectedGroupId
+                selectedGroupId: root.selectionModel.displaySelectedId
                 displayGroups: root.selectionModel.displayGroups
                 hoverSelectionEnabled: root.hoverSelectionUnlocked
                 onGroupHovered: groupId => {
                     if (root.hoverSelectionUnlocked) {
-                        root.selectionModel.selectGroup(groupId);
+                        root.selectionModel.selectDisplayItem(groupId);
                     }
                 }
                 onGroupActivated: groupId => {
-                    if (groupId === root.session.selectedGroupId) {
+                    if (groupId === root.selectionModel.displaySelectedId) {
                         root.controller.acceptSelection();
                     } else {
-                        root.selectionModel.selectGroup(groupId);
+                        root.selectionModel.selectDisplayItem(groupId);
                     }
                 }
             }

@@ -9,6 +9,10 @@ QtObject {
     property string activeScreenName: ""
     property string selectedGroupId: ""
     property var selectedGroup: null
+    property bool windowSelectionActive: false
+    property string windowSelectionGroupId: ""
+    property string selectedWindowId: ""
+    property var selectedWindow: null
     property double lastCycleAt: 0
     property string lastCycleDirection: ""
     property double lastTriggerAt: 0
@@ -45,6 +49,10 @@ QtObject {
         overlayVisible = false;
         lastLifecycleEvent = "hidden";
         activeModifierPrefix = "";
+        windowSelectionActive = false;
+        windowSelectionGroupId = "";
+        selectedWindowId = "";
+        selectedWindow = null;
         if (resetModifier !== false) {
             modifierHeld = false;
         }
@@ -62,6 +70,9 @@ QtObject {
             modifierHeld: modifierHeld,
             activeScreenName: activeScreenName,
             selectedGroupId: selectedGroupId,
+            windowSelectionActive: windowSelectionActive,
+            windowSelectionGroupId: windowSelectionGroupId,
+            selectedWindowId: selectedWindowId,
             groupCount: groupCount,
             displayGroupCount: displayGroupCount,
             lastTriggerAt: lastTriggerAt,

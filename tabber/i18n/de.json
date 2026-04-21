@@ -19,6 +19,10 @@
           "label": "Fenster nach App gruppieren",
           "description": "Wenn aktiviert, erscheinen mehrere Fenster derselben App als ein Eintrag. Deaktivieren für normales Umschalten pro Fenster."
         },
+        "enterGroupedWindowSelection": {
+          "label": "Gruppierte Fenster betreten",
+          "description": "Wenn aktiviert, öffnet das Enter-Group-Tastenkürzel die gewählte App-Gruppe, damit du das genaue Fenster für den Fokus auswählen kannst."
+        },
         "currentMonitorOnly": {
           "label": "Nur aktueller Monitor",
           "description": "Wenn aktiviert, zeigt Tabber nur Fenster von dem Monitor an, auf dem das Overlay geoeffnet wurde."

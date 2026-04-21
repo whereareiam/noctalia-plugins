@@ -19,6 +19,10 @@
           "label": "Group windows by app",
           "description": "When enabled, multiple windows from the same app appear as one item. Disable it for normal per-window switching."
         },
+        "enterGroupedWindowSelection": {
+          "label": "Enter grouped windows",
+          "description": "When enabled, the enter-group keybind opens the selected app group so you can choose the exact window to focus."
+        },
         "currentMonitorOnly": {
           "label": "Current monitor only",
           "description": "When enabled, Tabber only shows windows from the monitor where the overlay was opened."

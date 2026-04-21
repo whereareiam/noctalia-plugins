@@ -30,6 +30,21 @@ ColumnLayout {
 
     NToggle {
         Layout.fillWidth: true
+        visible: root.generalForm.groupWindowsByApp
+        label: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.enterGroupedWindowSelection.label", "Enter grouped windows");
+        }
+        description: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.enterGroupedWindowSelection.description", "When enabled, the enter-group keybind opens the selected app group so you can choose the exact window to focus.");
+        }
+        checked: root.generalForm.enterGroupedWindowSelection
+        onToggled: checked => root.generalForm.enterGroupedWindowSelection = checked
+    }
+
+    NToggle {
+        Layout.fillWidth: true
         label: {
             root.settingsStore.translationVersion;
             return root.settingsStore.tr("settings.general.behavior.currentMonitorOnly.label", "Current monitor only");

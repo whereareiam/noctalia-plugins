@@ -62,6 +62,7 @@ Tabber provides an Alt-Tab style switcher for Noctalia on Hyprland.
 
 It supports:
 - grouped mode: windows from the same app appear as one item
+- optional group entry: open a grouped app and choose the exact window to focus
 - normal mode: every window appears as its own item
 - custom actions driven by user-configured scripts
 - optional Veil integration for restoring hidden windows inside the overlay
@@ -83,6 +84,7 @@ Example Hyprland wiring:
 ```ini
 bind = ALT, Tab, global, tabber:select-next
 bind = ALT SHIFT, Tab, global, tabber:select-previous
+bind = ALT, Grave, global, tabber:enter-group
 bind = , Alt_L, global, tabber:release-alt-left
 bind = , Alt_R, global, tabber:release-alt-right
 ```

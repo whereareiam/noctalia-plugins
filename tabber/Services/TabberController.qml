@@ -145,6 +145,11 @@ QtObject {
     }
 
     function acceptSelection() {
+        if (session.windowSelectionActive) {
+            acceptWindowSelection();
+            return;
+        }
+
         if (!session.selectedGroup || !session.selectedGroup.primaryWindowId) {
             hideOverlay(false);
             return;
@@ -171,6 +176,89 @@ QtObject {
             } else {
                 focusWindowById(targetWindowId);
             }
+        });
+    }
+
+    function acceptWindowSelection() {
+        var targetWindowId = String(session.selectedWindowId || "");
+        var targetWindow = session.selectedWindow;
+        if (!targetWindowId && targetWindow) {
+            targetWindowId = String(targetWindow.id || "");
+        }
+
+        session.markAccepted();
+        hideOverlay(false);
+
+        if (!targetWindowId) {
+            return;
+        }
+
+        Qt.callLater(function () {
+            focusWindowById(targetWindowId);
+        });
+    }
+
+    function canEnterSelectedGroup() {
+        return session.overlayVisible
+            && settingsStore
+            && settingsStore.general
+            && settingsStore.general.groupWindowsByApp === true
+            && settingsStore.general.enterGroupedWindowSelection === true
+            && session.selectedGroup
+            && session.selectedGroup.isIntegrationEntry !== true
+            && session.selectedGroup.windows
+            && session.selectedGroup.windows.length > 1;
+    }
+
+    function enterSelectedGroup() {
+        if (session.windowSelectionActive) {
+            return true;
+        }
+
+        if (!canEnterSelectedGroup()) {
+            return false;
+        }
+
+        return selectionModel.enterWindowSelection();
+    }
+
+    function enterGroupDiagnostic() {
+        var selectedGroup = session ? session.selectedGroup : null;
+        return {
+            overlayVisible: session ? session.overlayVisible === true : false,
+            windowSelectionActive: session ? session.windowSelectionActive === true : false,
+            groupWindowsByApp: settingsStore && settingsStore.general ? settingsStore.general.groupWindowsByApp === true : false,
+            enterGroupedWindowSelection: settingsStore && settingsStore.general ? settingsStore.general.enterGroupedWindowSelection === true : false,
+            selectedGroupId: selectedGroup ? String(selectedGroup.groupId || "") : "",
+            selectedGroupTitle: selectedGroup ? String(selectedGroup.primaryTitle || "") : "",
+            selectedGroupWindowCount: selectedGroup && selectedGroup.windows ? selectedGroup.windows.length : 0,
+            selectedGroupIsIntegrationEntry: selectedGroup ? selectedGroup.isIntegrationEntry === true : false,
+            displayGroupCount: selectionModel && selectionModel.displayGroups ? selectionModel.displayGroups.length : 0,
+            canEnter: canEnterSelectedGroup()
+        };
+    }
+
+    function groupDebugList() {
+        var groups = groupModel && groupModel.groupList ? groupModel.groupList : [];
+        return groups.map(function (group) {
+            return {
+                groupId: String(group && group.groupId || ""),
+                title: String(group && group.primaryTitle || ""),
+                appId: String(group && group.appId || ""),
+                windowCount: group && group.windows ? group.windows.length : 0,
+                selected: session && group && group.groupId === session.selectedGroupId
+            };
+        });
+    }
+
+    function enterSelectedGroupDebug() {
+        var before = enterGroupDiagnostic();
+        var entered = enterSelectedGroup();
+        var after = enterGroupDiagnostic();
+        return JSON.stringify({
+            entered: entered,
+            before: before,
+            after: after
         });
     }
 
@@ -330,6 +418,20 @@ QtObject {
         return actionRegistry.findByOverlayKeybind(fallbackKeybind);
     }
 
+    function isEnterGroupKeyEvent(event) {
+        if (!event || !((event.modifiers & Qt.AltModifier) || (event.modifiers & Qt.MetaModifier))) {
+            return false;
+        }
+
+        return event.key === Qt.Key_Dead_Circumflex
+            || event.key === Qt.Key_Dead_Grave
+            || event.key === Qt.Key_Dead_Tilde
+            || event.key === Qt.Key_QuoteLeft
+            || event.key === Qt.Key_AsciiCircum
+            || event.key === Qt.Key_section
+            || event.key === Qt.Key_degree;
+    }
+
     function trigger(direction, source) {
         if (!pluginApi || !pluginApi.withCurrentScreen) {
             return;
@@ -360,6 +462,14 @@ QtObject {
                     return;
                 }
                 selectionModel.moveSelection(normalizedDirection, true);
+            } else if (session.windowSelectionActive) {
+                session.activeScreenName = screenName;
+                session.markCycled();
+                if (!refreshGroups(true)) {
+                    hideOverlay(false);
+                    return;
+                }
+                selectionModel.moveWindowSelection(normalizedDirection);
             } else {
                 session.activeScreenName = screenName;
                 session.markCycled();
@@ -382,7 +492,16 @@ QtObject {
             return true;
         }
 
+        if (isEnterGroupKeyEvent(event) && enterSelectedGroup()) {
+            console.log("[Tabber] entered grouped window selection from overlay key");
+            return true;
+        }
+
         if (event.key === Qt.Key_Escape) {
+            if (session.windowSelectionActive && selectionModel.exitWindowSelection()) {
+                return true;
+            }
+
             hideOverlay(false);
             return true;
         }
@@ -417,6 +536,9 @@ QtObject {
     }
 
     function debugState() {
-        return session.debugState(groupModel.groupList.length, selectionModel.displayGroups.length);
+        return JSON.stringify(Object.assign(JSON.parse(session.debugState(groupModel.groupList.length, selectionModel.displayGroups.length)), {
+            enterGroup: enterGroupDiagnostic(),
+            groups: groupDebugList()
+        }));
     }
 }

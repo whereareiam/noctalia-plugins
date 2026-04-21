@@ -28,6 +28,14 @@ Item {
             root.controller.acceptSelection();
         }
 
+        function enterGroup() {
+            root.controller.enterSelectedGroup();
+        }
+
+        function enterGroupDebug(): string {
+            return root.controller.enterSelectedGroupDebug();
+        }
+
         function action(actionId: string) {
             root.controller.runActionById(actionId);
         }
@@ -99,6 +107,14 @@ Item {
         description: "Tabber modifier release tracker (Super binding)"
         triggerDescription: "Configured in Hyprland"
         onReleased: root.controller.handleGlobalModifierRelease(Qt.Key_Meta)
+    }
+
+    GlobalShortcut {
+        appid: "tabber"
+        name: "enter-group"
+        description: "Tabber enter selected group"
+        triggerDescription: "Configured in Hyprland"
+        onPressed: root.controller.enterSelectedGroup()
     }
 
     // Legacy aliases for existing Hyprland configs.

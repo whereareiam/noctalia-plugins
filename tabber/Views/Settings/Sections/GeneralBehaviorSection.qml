@@ -70,4 +70,33 @@ ColumnLayout {
         checked: root.generalForm.requirePointerMovementForHoverSelection
         onToggled: checked => root.generalForm.requirePointerMovementForHoverSelection = checked
     }
+
+    NToggle {
+        Layout.fillWidth: true
+        label: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.cycleSelectionWhileHoldingTab.label", "Cycle while holding Tab");
+        }
+        description: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.cycleSelectionWhileHoldingTab.description", "When enabled, holding the trigger key keeps advancing through Tabber until you release Tab or focus reaches the configured edge.");
+        }
+        checked: root.generalForm.cycleSelectionWhileHoldingTab
+        onToggled: checked => root.generalForm.cycleSelectionWhileHoldingTab = checked
+    }
+
+    NToggle {
+        Layout.fillWidth: true
+        visible: root.generalForm.cycleSelectionWhileHoldingTab
+        label: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.stopContinuousCycleAtEdge.label", "Stop hold-to-cycle at the edge");
+        }
+        description: {
+            root.settingsStore.translationVersion;
+            return root.settingsStore.tr("settings.general.behavior.stopContinuousCycleAtEdge.description", "When enabled, hold-to-cycle stops on the first or last item instead of wrapping around.");
+        }
+        checked: root.generalForm.stopContinuousCycleAtEdge
+        onToggled: checked => root.generalForm.stopContinuousCycleAtEdge = checked
+    }
 }

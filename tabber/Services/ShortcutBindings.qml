@@ -51,6 +51,7 @@ Item {
         description: "Tabber select next item"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("next", "global-shortcut-alt")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -59,6 +60,7 @@ Item {
         description: "Tabber select previous item"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("previous", "global-shortcut-alt")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -67,6 +69,7 @@ Item {
         description: "Tabber select next item (Super binding)"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("next", "global-shortcut-super")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -75,6 +78,7 @@ Item {
         description: "Tabber select previous item (Super binding)"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("previous", "global-shortcut-super")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -124,6 +128,7 @@ Item {
         description: "Tabber select next item"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("next", "global-shortcut-alt")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -132,6 +137,7 @@ Item {
         description: "Tabber select previous item"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("previous", "global-shortcut-alt")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -140,6 +146,7 @@ Item {
         description: "Tabber select next item (Super binding)"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("next", "global-shortcut-super")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {
@@ -148,6 +155,7 @@ Item {
         description: "Tabber select previous item (Super binding)"
         triggerDescription: "Configured in Hyprland"
         onPressed: root.controller.trigger("previous", "global-shortcut-super")
+        onReleased: root.controller.handleTriggerRelease()
     }
 
     GlobalShortcut {

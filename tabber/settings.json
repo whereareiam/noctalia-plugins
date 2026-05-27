@@ -3,7 +3,9 @@
     "groupWindowsByApp": true,
     "enterGroupedWindowSelection": true,
     "restrictToCurrentMonitor": true,
-    "requirePointerMovementForHoverSelection": true
+    "requirePointerMovementForHoverSelection": true,
+    "cycleSelectionWhileHoldingTab": true,
+    "stopContinuousCycleAtEdge": false
   },
   "appearance": {
     "dimOpacity": 0.36,

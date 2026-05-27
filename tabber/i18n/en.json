@@ -30,6 +30,14 @@
         "requirePointerMovementForHoverSelection": {
           "label": "Require pointer movement for hover selection",
           "description": "When enabled, a stationary mouse cannot change the initial Tabber selection. Hover only starts affecting selection after the pointer moves."
+        },
+        "cycleSelectionWhileHoldingTab": {
+          "label": "Cycle while holding Tab",
+          "description": "When enabled, holding the trigger key keeps advancing through Tabber until you release Tab or focus reaches the configured edge."
+        },
+        "stopContinuousCycleAtEdge": {
+          "label": "Stop hold-to-cycle at the edge",
+          "description": "When enabled, hold-to-cycle stops on the first or last item instead of wrapping around."
         }
       }
     },

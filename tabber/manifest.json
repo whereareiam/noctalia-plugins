@@ -21,7 +21,9 @@
         "groupWindowsByApp": true,
         "enterGroupedWindowSelection": false,
         "restrictToCurrentMonitor": false,
-        "requirePointerMovementForHoverSelection": true
+        "requirePointerMovementForHoverSelection": true,
+        "cycleSelectionWhileHoldingTab": false,
+        "stopContinuousCycleAtEdge": false
       },
       "appearance": {
         "dimOpacity": 0.36,

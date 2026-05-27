@@ -11,6 +11,25 @@ QtObject {
     property var displayGroups: []
     readonly property string displaySelectedId: session.windowSelectionActive ? session.selectedWindowId : session.selectedGroupId
 
+    function nextIndexForMove(currentIndex, itemCount, direction, wrapAround) {
+        if (itemCount <= 0) {
+            return -1;
+        }
+
+        var normalizedCurrentIndex = currentIndex;
+        if (normalizedCurrentIndex < 0 || normalizedCurrentIndex >= itemCount) {
+            normalizedCurrentIndex = 0;
+        }
+
+        var step = direction === "previous" ? -1 : 1;
+        var candidateIndex = normalizedCurrentIndex + step;
+        if (wrapAround === false && (candidateIndex < 0 || candidateIndex >= itemCount)) {
+            return -1;
+        }
+
+        return (candidateIndex + itemCount) % itemCount;
+    }
+
     function syncSelection(keepSelection) {
         var groups = groupModel ? groupModel.groupList : [];
         if (!groups || groups.length === 0) {
@@ -183,10 +202,10 @@ QtObject {
         }
     }
 
-    function moveSelection(direction, forceFromFocused) {
+    function moveSelection(direction, forceFromFocused, wrapAround) {
         var groups = groupModel ? groupModel.groupList : [];
         if (!groups || groups.length === 0) {
-            return;
+            return false;
         }
 
         var orderedIds = groups.map(function (group) {
@@ -198,16 +217,20 @@ QtObject {
             currentIndex = 0;
         }
 
-        var step = direction === "previous" ? -1 : 1;
-        var nextIndex = (currentIndex + step + orderedIds.length) % orderedIds.length;
+        var nextIndex = nextIndexForMove(currentIndex, orderedIds.length, direction, wrapAround);
+        if (nextIndex < 0 || orderedIds[nextIndex] === session.selectedGroupId) {
+            return false;
+        }
+
         session.selectedGroupId = orderedIds[nextIndex];
         updateDisplayGroups();
+        return true;
     }
 
-    function moveWindowSelection(direction) {
+    function moveWindowSelection(direction, wrapAround) {
         var windows = selectedGroupWindows();
         if (!session.windowSelectionActive || windows.length === 0) {
-            return;
+            return false;
         }
 
         var orderedIds = windows.map(function (windowData) {
@@ -216,7 +239,7 @@ QtObject {
             return windowId !== "";
         });
         if (orderedIds.length === 0) {
-            return;
+            return false;
         }
 
         var currentIndex = orderedIds.indexOf(session.selectedWindowId);
@@ -224,10 +247,14 @@ QtObject {
             currentIndex = 0;
         }
 
-        var step = direction === "previous" ? -1 : 1;
-        var nextIndex = (currentIndex + step + orderedIds.length) % orderedIds.length;
+        var nextIndex = nextIndexForMove(currentIndex, orderedIds.length, direction, wrapAround);
+        if (nextIndex < 0 || orderedIds[nextIndex] === session.selectedWindowId) {
+            return false;
+        }
+
         session.selectedWindowId = orderedIds[nextIndex];
         syncWindowSelection();
         updateDisplayGroups();
+        return true;
     }
 }

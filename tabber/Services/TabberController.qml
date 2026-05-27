@@ -19,10 +19,81 @@ QtObject {
     required property var actionRegistry
 
     readonly property int cycleDebounceMs: 70
+    readonly property int continuousCycleInitialDelayMs: 260
+    readonly property int continuousCycleIntervalMs: 110
+
+    property bool continuousCycleActive: false
+    property bool continuousCycleStopAtEdge: false
+    property string continuousCycleDirection: ""
+
+    property Timer continuousCycleTimer: Timer {
+        interval: root.continuousCycleInitialDelayMs
+        repeat: false
+        onTriggered: root.handleContinuousCycleTick()
+    }
 
     function initialize() {
         syncGroupModelWithFocus();
         publishSelectionContext();
+    }
+
+    function holdToCycleEnabled() {
+        return settingsStore
+            && settingsStore.general
+            && settingsStore.general.cycleSelectionWhileHoldingTab === true;
+    }
+
+    function shouldStopContinuousCycleAtEdge() {
+        return settingsStore
+            && settingsStore.general
+            && settingsStore.general.stopContinuousCycleAtEdge === true;
+    }
+
+    function sourceSupportsHoldToCycle(source) {
+        return source === "global-shortcut-alt"
+            || source === "global-shortcut-super"
+            || source === "window";
+    }
+
+    function stopContinuousCycle() {
+        continuousCycleActive = false;
+        continuousCycleDirection = "";
+        continuousCycleStopAtEdge = false;
+        continuousCycleTimer.stop();
+    }
+
+    function startContinuousCycle(direction, source) {
+        if (!holdToCycleEnabled() || !sourceSupportsHoldToCycle(source)) {
+            stopContinuousCycle();
+            return;
+        }
+
+        continuousCycleActive = true;
+        continuousCycleDirection = direction === "previous" ? "previous" : "next";
+        continuousCycleStopAtEdge = shouldStopContinuousCycleAtEdge();
+        continuousCycleTimer.interval = continuousCycleInitialDelayMs;
+        continuousCycleTimer.restart();
+    }
+
+    function continueContinuousCycle() {
+        if (!continuousCycleActive || !session.overlayVisible || !session.modifierHeld) {
+            stopContinuousCycle();
+            return false;
+        }
+
+        var didMove = cycleSelectionStep(continuousCycleDirection, false, !continuousCycleStopAtEdge);
+        if (!didMove) {
+            stopContinuousCycle();
+            return false;
+        }
+
+        continuousCycleTimer.interval = continuousCycleIntervalMs;
+        continuousCycleTimer.restart();
+        return true;
+    }
+
+    function handleContinuousCycleTick() {
+        continueContinuousCycle();
     }
 
     function refreshGroups(keepSelection) {
@@ -64,8 +135,38 @@ QtObject {
     }
 
     function hideOverlay(resetModifier) {
+        stopContinuousCycle();
         session.markHidden(resetModifier);
         publishSelectionContext();
+    }
+
+    function cycleSelectionStep(direction, forceFromFocused, wrapAround) {
+        var normalizedDirection = direction === "previous" ? "previous" : "next";
+        var didMove = false;
+
+        if (session.windowSelectionActive) {
+            session.markCycled();
+            if (!refreshGroups(true)) {
+                hideOverlay(false);
+                return false;
+            }
+
+            didMove = selectionModel.moveWindowSelection(normalizedDirection, wrapAround);
+        } else {
+            session.markCycled();
+            if (!refreshGroups(true)) {
+                hideOverlay(false);
+                return false;
+            }
+
+            didMove = selectionModel.moveSelection(normalizedDirection, forceFromFocused, wrapAround);
+        }
+
+        if (didMove) {
+            publishSelectionContext();
+        }
+
+        return didMove;
     }
 
     function groupedWindowArea(windowData) {
@@ -289,6 +390,7 @@ QtObject {
             return;
         }
 
+        stopContinuousCycle();
         Quickshell.execDetached([actionDefinition.script, JSON.stringify(actionRegistry.buildGroupPayload(actionDefinition.id, session.selectedGroup))]);
         Qt.callLater(function () {
             if (!refreshGroups(true) && session.overlayVisible) {
@@ -386,6 +488,7 @@ QtObject {
 
     function handleGlobalModifierRelease(key) {
         session.markModifierReleased(key, "modifier-release-global", Date.now());
+        stopContinuousCycle();
 
         if (!session.overlayVisible || !session.modifierHeld) {
             return;
@@ -401,6 +504,10 @@ QtObject {
         } else if (source === "global-shortcut-super") {
             session.activeModifierPrefix = "Super";
         }
+    }
+
+    function handleTriggerRelease() {
+        stopContinuousCycle();
     }
 
     function actionFromEvent(event) {
@@ -461,24 +568,18 @@ QtObject {
                     hideOverlay(false);
                     return;
                 }
-                selectionModel.moveSelection(normalizedDirection, true);
+                if (selectionModel.moveSelection(normalizedDirection, true, true)) {
+                    publishSelectionContext();
+                }
             } else if (session.windowSelectionActive) {
                 session.activeScreenName = screenName;
-                session.markCycled();
-                if (!refreshGroups(true)) {
-                    hideOverlay(false);
-                    return;
-                }
-                selectionModel.moveWindowSelection(normalizedDirection);
+                cycleSelectionStep(normalizedDirection, false, true);
             } else {
                 session.activeScreenName = screenName;
-                session.markCycled();
-                if (!refreshGroups(true)) {
-                    hideOverlay(false);
-                    return;
-                }
-                selectionModel.moveSelection(normalizedDirection, false);
+                cycleSelectionStep(normalizedDirection, false, true);
             }
+
+            startContinuousCycle(normalizedDirection, source);
         });
     }
 
@@ -525,8 +626,13 @@ QtObject {
             return false;
         }
 
+        if (event.key === Qt.Key_Tab) {
+            stopContinuousCycle();
+        }
+
         if (session.modifierHeld && isModifierRelease(event)) {
             session.markModifierReleased(event.key, "modifier-release", Date.now());
+            stopContinuousCycle();
             session.modifierHeld = false;
             acceptSelection();
             return true;

@@ -30,6 +30,14 @@
         "requirePointerMovementForHoverSelection": {
           "label": "Zeigerbewegung fuer Hover-Auswahl verlangen",
           "description": "Wenn aktiviert, kann eine stillstehende Maus die anfaengliche Tabber-Auswahl nicht veraendern. Hover wirkt sich erst aus, nachdem sich der Zeiger bewegt hat."
+        },
+        "cycleSelectionWhileHoldingTab": {
+          "label": "Beim Halten von Tab weiter schalten",
+          "description": "Wenn aktiviert, springt Tabber beim Gedrueckthalten der Ausloesetaste weiter, bis du Tab loslaesst oder der konfigurierte Rand erreicht ist."
+        },
+        "stopContinuousCycleAtEdge": {
+          "label": "Halt am Rand beim Gedrueckthalten",
+          "description": "Wenn aktiviert, stoppt das Gedrueckthalten am ersten oder letzten Eintrag, statt wieder von vorn zu beginnen."
         }
       }
     },

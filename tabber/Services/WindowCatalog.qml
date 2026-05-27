@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Hyprland
+import Quickshell.Io
 
 import "../Utils/GroupUtils.js" as GroupUtils
 import qs.Services.Compositor
@@ -12,6 +13,10 @@ QtObject {
     required property var integrationRegistry
 
     property var entries: []
+    property var liveHyprlandClients: ({})
+    property bool liveHyprlandClientsLoaded: false
+    property bool liveHyprlandClientsRefreshInFlight: false
+    property bool liveHyprlandClientsRefreshQueued: false
 
     function normalizeWindowId(windowId) {
         var normalizedId = String(windowId || "").trim().toLowerCase();
@@ -53,6 +58,78 @@ QtObject {
         return null;
     }
 
+    function canValidateAgainstHyprlandToplevels() {
+        return !!(Hyprland.toplevels && Hyprland.toplevels.values);
+    }
+
+    function findLiveHyprlandClient(windowId) {
+        if (!liveHyprlandClientsLoaded) {
+            return null;
+        }
+
+        var normalizedWindowId = normalizeWindowId(windowId);
+        return normalizedWindowId ? (liveHyprlandClients[normalizedWindowId] || null) : null;
+    }
+
+    function parseLiveHyprlandClientsSnapshot(snapshotText) {
+        var parsedSnapshot = JSON.parse(snapshotText);
+        var sourceClients = Array.isArray(parsedSnapshot) ? parsedSnapshot : [];
+        var nextClients = ({});
+
+        for (var index = 0; index < sourceClients.length; index++) {
+            var client = sourceClients[index];
+            var normalizedAddress = normalizeWindowId(client && client.address);
+            if (!normalizedAddress) {
+                continue;
+            }
+
+            nextClients[normalizedAddress] = client;
+        }
+
+        liveHyprlandClients = nextClients;
+        liveHyprlandClientsLoaded = true;
+    }
+
+    function refreshLiveHyprlandClientsSnapshot() {
+        if (liveHyprlandClientsRefreshInFlight) {
+            liveHyprlandClientsRefreshQueued = true;
+            return;
+        }
+
+        liveHyprlandClientsRefreshInFlight = true;
+        liveHyprlandClientsRefreshQueued = false;
+
+        var snapshotProcess = Qt.createQmlObject(`
+            import QtQuick
+            import Quickshell.Io
+
+            Process {
+                command: ["hyprctl", "-j", "clients"]
+                stdout: StdioCollector {}
+            }
+        `, root, "HyprlandClientsSnapshot_" + Date.now());
+
+        snapshotProcess.exited.connect(function (exitCode) {
+            if (exitCode === 0) {
+                try {
+                    root.parseLiveHyprlandClientsSnapshot(snapshotProcess.stdout.text);
+                    root.refresh(false);
+                } catch (e) {
+                    console.log("[Tabber] Failed to parse hyprctl clients snapshot:", e);
+                }
+            }
+
+            snapshotProcess.destroy();
+            root.liveHyprlandClientsRefreshInFlight = false;
+
+            if (root.liveHyprlandClientsRefreshQueued) {
+                root.refreshLiveHyprlandClientsSnapshot();
+            }
+        });
+
+        snapshotProcess.running = true;
+    }
+
     function dimensionValue(value) {
         var numericValue = Number(value);
         return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
@@ -66,6 +143,18 @@ QtObject {
                 width: width,
                 height: height
             };
+        }
+
+        var liveClient = findLiveHyprlandClient(win ? win.id : "");
+        if (liveClient && Array.isArray(liveClient.size) && liveClient.size.length >= 2) {
+            width = dimensionValue(liveClient.size[0]);
+            height = dimensionValue(liveClient.size[1]);
+            if (width > 0 && height > 0) {
+                return {
+                    width: width,
+                    height: height
+                };
+            }
         }
 
         var toplevel = findHyprlandToplevel(win ? win.id : "");
@@ -95,10 +184,21 @@ QtObject {
             return false;
         }
 
-        var toplevel = findHyprlandToplevel(win.id);
-        if (!toplevel) {
+        var liveClient = findLiveHyprlandClient(win.id);
+        if (liveHyprlandClientsLoaded) {
+            if (!liveClient) return false;
+            if (liveClient.hidden === true || liveClient.mapped === false) return false;
+
+            if (liveClient.workspace && GroupUtils.isSpecialWorkspaceId(liveClient.workspace.id)) {
+                return false;
+            }
+
             return true;
         }
+
+        var toplevel = findHyprlandToplevel(win.id);
+        if (!toplevel && !canValidateAgainstHyprlandToplevels()) return true;
+        if (!toplevel) return false;
 
         try {
             if (toplevel.workspace && GroupUtils.isSpecialWorkspaceId(toplevel.workspace.id)) {
@@ -205,7 +305,11 @@ QtObject {
         return nextEntries;
     }
 
-    function refresh() {
+    function refresh(shouldRefreshLiveClients) {
+        if (shouldRefreshLiveClients !== false) {
+            refreshLiveHyprlandClientsSnapshot();
+        }
+
         var visibleWindowIds = ({});
         var targetOutputName = activeOutputName();
         var nextEntries = buildVisibleEntries(targetOutputName, visibleWindowIds);

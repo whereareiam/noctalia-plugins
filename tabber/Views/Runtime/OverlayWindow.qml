@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 
-import "../../Components/Runtime/Overlay" as OverlayComponents
+import "../../Components/Overlay" as OverlayComponents
 import qs.Commons
 
 PanelWindow {

@@ -2,7 +2,7 @@ import QtQuick
 
 import "./Integrations" as IntegrationModels
 import "./Integrations/Veil" as VeilIntegrationModels
-import "./Models/Runtime" as RuntimeModels
+import "./Models" as RuntimeModels
 import "./Models/Settings" as SettingsModels
 import "./Services" as Services
 import "./Views/Runtime" as RuntimeViews

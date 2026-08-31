@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-import "../../../../Components/Runtime/Overlay" as OverlayComponents
+import "../../../../Components/Overlay" as OverlayComponents
 import qs.Commons
 import qs.Services.UI
 import qs.Widgets

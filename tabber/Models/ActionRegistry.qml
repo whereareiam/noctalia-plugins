@@ -1,6 +1,6 @@
 import QtQuick
 
-import "../../Utils/GroupUtils.js" as GroupUtils
+import "../Utils/GroupUtils.js" as GroupUtils
 
 QtObject {
     id: root

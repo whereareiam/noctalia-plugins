@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell.Widgets
 
-import "../../../Utils/SettingsUtils.js" as SettingsUtils
+import "../../Utils/SettingsUtils.js" as SettingsUtils
 import qs.Commons
 import qs.Widgets
 

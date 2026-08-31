@@ -1,0 +1,25 @@
+{
+  "settings": {
+    "general": {
+      "group_windows_by_app": { "label": "Group windows by app", "description": "General — Choose what Tabber shows and how selection behaves. Show windows from the same app as one switcher item." },
+      "enter_grouped_window_selection": { "label": "Enter grouped window selection", "description": "Let the group key open the selected app's individual windows." },
+      "restrict_to_current_monitor": { "label": "Restrict to current monitor", "description": "Only include windows on the output where Tabber was triggered." },
+      "require_pointer_movement_for_hover_selection": { "label": "Require pointer movement for hover selection", "description": "Avoid selecting a card until the pointer moves across the overlay." },
+      "cycle_selection_while_holding_tab": { "label": "Cycle while holding Tab", "description": "Continue cycling after the initial key press while the modifier is held." },
+      "stop_continuous_cycle_at_edge": { "label": "Stop continuous cycling at the edge", "description": "When enabled, repeated cycling stops at the first or last item instead of wrapping around." }
+    },
+    "appearance": {
+      "dim_opacity": { "label": "Dim opacity", "description": "Appearance — Configure the overlay surface, card layout, and title presentation. Opacity of the background scrim." },
+      "container_width": { "label": "Container minimum width", "description": "Minimum width in logical pixels; zero keeps automatic sizing." },
+      "container_padding_top": { "label": "Container top padding" }, "container_padding_right": { "label": "Container right padding" }, "container_padding_bottom": { "label": "Container bottom padding" }, "container_padding_left": { "label": "Container left padding" },
+      "header_show": { "label": "Show header", "description": "Show the title and window count above the cards." }, "header_alignment": { "label": "Header alignment" }, "header_text": { "label": "Header text", "description": "Text displayed in the header." }, "header_show_window_count": { "label": "Show window count" }, "header_padding_linked": { "label": "Link header padding sides" },
+      "header_padding_top": { "label": "Header top padding" }, "header_padding_right": { "label": "Header right padding" }, "header_padding_bottom": { "label": "Header bottom padding" }, "header_padding_left": { "label": "Header left padding" },
+      "card_size": { "label": "Card size" }, "card_gap": { "label": "Card gap" }, "icon_size": { "label": "Icon size" }, "title_visibility": { "label": "Title visibility" }, "title_truncation_mode": { "label": "Title truncation" }
+    },
+    "integrations": {
+      "veil_enabled": { "label": "Enable Veil integration", "description": "Integrations — Connect Tabber to related plugins and control how their entries appear. Include windows managed by the whereareiam/veil plugin." },
+      "highlight_hidden_cards": { "label": "Highlight hidden cards" }, "hidden_card_accent_color": { "label": "Hidden card accent color", "description": "Optional hex color, for example #ffcc00." }
+    },
+    "options": { "space_between": "Space between", "left": "Left", "center": "Center", "hidden": "Hidden", "selected": "Selected", "all": "All", "end_ellipsis": "End ellipsis", "middle_ellipsis": "Middle ellipsis", "two_lines": "Two lines" }
+  }
+}

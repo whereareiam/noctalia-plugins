@@ -22,17 +22,12 @@ normalize_address() {
     printf '0x%s\n' "$id"
 }
 
-mapfile -t window_ids < <(jq -r '.windows[]?.id // empty' <<<"$payload")
+target_window_id="$(jq -r '.targetWindowId // .primaryWindowId // empty' <<<"$payload")"
 
-if [[ ${#window_ids[@]} -eq 0 ]]; then
+if [[ -z "$target_window_id" ]]; then
     active_address="$(hyprctl activewindow -j 2>/dev/null | jq -r '.address // empty')"
-    if [[ -n "$active_address" ]]; then
-        hyprctl dispatch closewindow "address:${active_address}" >/dev/null 2>&1 || true
-    fi
-    exit 0
+    target_window_id="$active_address"
 fi
 
-for window_id in "${window_ids[@]}"; do
-    address="$(normalize_address "$window_id")" || continue
-    hyprctl dispatch closewindow "address:${address}" >/dev/null 2>&1 || true
-done
+address="$(normalize_address "$target_window_id")" || exit 0
+hyprctl dispatch "hl.dsp.window.close({ window = \"address:${address}\" })"

@@ -1,0 +1,14 @@
+{
+  "bar": {
+    "tooltip": {
+      "one": "{count} hidden window",
+      "other": "{count} hidden windows"
+    }
+  },
+  "panel": {
+    "title": "Hidden windows",
+    "restore": "Restore",
+    "close": "Close",
+    "empty": "No hidden windows."
+  }
+}

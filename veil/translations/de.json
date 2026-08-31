@@ -1,0 +1,4 @@
+{
+  "bar": { "tooltip": { "one": "{count} verstecktes Fenster", "other": "{count} versteckte Fenster" } },
+  "panel": { "title": "Versteckte Fenster", "restore": "Wiederherstellen", "close": "Schließen", "empty": "Keine versteckten Fenster." }
+}

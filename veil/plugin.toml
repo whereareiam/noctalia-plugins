@@ -1,0 +1,27 @@
+id = "whereareiam/veil"
+name = "Veil"
+version = "2.0.0"
+plugin_api = 24
+author = "whereareiam"
+license = "MIT"
+icon = "eye-off"
+tags = ["hyprland", "utility", "window-management"]
+dependencies = ["hyprctl"]
+description = "Hide focused Hyprland windows and restore them later from a native Noctalia panel."
+
+[[service]]
+id = "service"
+entry = "EntryPoints/Service.luau"
+
+[[widget]]
+id = "bar"
+entry = "EntryPoints/BarWidget.luau"
+
+[[panel]]
+id = "restore"
+entry = "EntryPoints/RestorePanel.luau"
+width = 360
+height = 420
+placement = "attached"
+position = "auto"
+open_near_click = true

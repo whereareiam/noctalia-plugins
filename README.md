@@ -1,100 +1,89 @@
-# whereareiam's Noctalia Plugins
+# whereareiam's Noctalia v5 plugins
 
-Some collection of maybe useful plugins for Noctalia.
+This repository contains two native Noctalia v5 plugins for Hyprland:
 
-## Add This Repository As a Source
+- `whereareiam/veil` hides focused windows in `special:hidden` and restores or closes them from a panel.
+- `whereareiam/tabber` provides a grouped Alt-Tab-style switcher with configurable appearance, actions, and Veil integration.
 
-1. Open Noctalia.
-2. Go to the plugins section.
-3. Add a custom plugin source.
-4. Use the repository URL of this source repo:
+## Install
 
-```text
-https://github.com/whereareiam/noctalia-plugins
+Add this repository as a plugin source in Noctalia, then enable the plugins:
+
+```sh
+noctalia msg plugins source add whereareiam git https://github.com/whereareiam/noctalia-plugins
+noctalia msg plugins enable whereareiam/veil
+noctalia msg plugins enable whereareiam/tabber
 ```
 
-5. Install the plugin you want from the list.
+For local development, use a path source instead:
 
-## Plugins
+```sh
+noctalia msg plugins source add whereareiam-dev path /path/to/noctalia-plugins
+```
 
-<details>
-<summary><strong>Veil</strong> — hidden window manager</summary>
+## Veil
 
-### What it does
+Add the `whereareiam/veil:bar` widget to a bar. The widget opens the restore panel and shows the number of hidden windows.
+The service also exposes these events:
 
-Veil hides focused windows and lets you restore them later.
+```sh
+noctalia msg plugin whereareiam/veil:service all toggle-focused
+noctalia msg plugin whereareiam/veil:service all open-restore-menu
+```
 
-It supports:
-- hiding the currently focused visible window
-- a bar icon that appears when hidden windows exist
-- a restore menu for bringing hidden windows back
-- integration points for other plugins such as Tabber
-
-### Requirements
-
-- `qs`
-- `hyprctl`
-- `jq`
-
-### After installation
-
-Veil exposes global actions that you can bind in Hyprland however you prefer.
-
-Example Hyprland wiring:
+Example Hyprland bindings (Super is owned by Hyprland; Noctalia panels cannot capture it):
 
 ```ini
-bind = SUPER, H, global, veil:toggle-focused
-bind = SUPER SHIFT, H, global, veil:open-restore-menu
+bind = SUPER, H, exec, noctalia msg plugin whereareiam/veil:service all toggle-focused
+bind = SUPER SHIFT, H, exec, noctalia msg plugin whereareiam/veil:service all open-restore-menu
 ```
 
-These bindings are only examples. Veil does not require specific keybinds.
+## Tabber
 
-</details>
-
-<details>
-<summary><strong>Tabber</strong> — macOS like window switcher</summary>
-
-<img alt="Tabber showcase" src=".github/assets/tabber/showcase.png" />
-
-### What it does
-
-Tabber provides an Alt-Tab style switcher for Noctalia on Hyprland.
-
-It supports:
-- grouped mode: windows from the same app appear as one item
-- optional group entry: open a grouped app and choose the exact window to focus
-- normal mode: every window appears as its own item
-- custom actions driven by user-configured scripts
-- optional Veil integration for restoring hidden windows inside the overlay
-
-Actions are identified by an action ID and a script path. Optional overlay shortcuts can be configured inside Tabber, but global hotkeys remain a Hyprland concern.
-
-### Requirements
-
-- `qs`
-- `hyprctl`
-- `jq`
-
-### After installation
-
-Tabber still needs Hyprland keybinds to trigger it.
-
-Example Hyprland wiring:
+Tabber uses the `whereareiam/tabber:service` entry for compositor state and the `whereareiam/tabber:overlay` panel for the UI.
+Use compositor IPC bindings for the Super workflow. The release binding is important: it accepts the selected item when
+Super is released, while repeated Super+Tab presses continue cycling.
 
 ```ini
-bind = ALT, Tab, global, tabber:select-next
-bind = ALT SHIFT, Tab, global, tabber:select-previous
-bind = ALT, Grave, global, tabber:enter-group
-bind = , Alt_L, global, tabber:release-alt-left
-bind = , Alt_R, global, tabber:release-alt-right
+bind = SUPER, Tab, exec, noctalia msg plugin whereareiam/tabber:service all next
+bind = SUPER SHIFT, Tab, exec, noctalia msg plugin whereareiam/tabber:service all previous
+bind = SUPER, Grave, exec, noctalia msg plugin whereareiam/tabber:service all enter-group
+bindr = SUPER, Tab, exec, noctalia msg plugin whereareiam/tabber:service all trigger-release
+bindr = SUPER SHIFT, Tab, exec, noctalia msg plugin whereareiam/tabber:service all trigger-release
+bindr = , SUPER_L, exec, noctalia msg plugin whereareiam/tabber:service all accept
+bindr = , SUPER_R, exec, noctalia msg plugin whereareiam/tabber:service all accept
+bind = SUPER, Q, exec, noctalia msg plugin whereareiam/tabber:service all action close
 ```
 
-Optional direct action binds via the generic action IPC for the bundled default actions:
+The modifier-release bindings must use an empty modifier field (`, SUPER_L` / `, SUPER_R`).
+Do not register them as `SUPER_L` with Super as the modifier: that binding is not matched
+when Super is released while Tab is still held, which leaves the switcher open.
 
-```ini
-bind = ALT, Q, exec, qs ipc -c noctalia-shell call plugin:tabber action close
+When using Hyprland's Lua config, `hl.bind("Super_L", ..., { release = true })` has the
+same problem because the Lua parser treats `Super_L` as a sided modifier. Bind the raw
+keycodes instead:
+
+```lua
+bind("code:133", hl.dsp.exec_cmd("noctalia msg plugin whereareiam/tabber:service all accept"), { release = true, ignore_mods = true }) -- Super_L
+bind("code:134", hl.dsp.exec_cmd("noctalia msg plugin whereareiam/tabber:service all accept"), { release = true, ignore_mods = true }) -- Super_R
 ```
 
-If Veil is installed, Tabber can list Veil-hidden windows and restore them when selected.
+The panel captures Tab, Shift+Tab, Grave, and Alt release while it is focused. Actions are intentionally hooked through
+the service IPC, so any compositor keybind or external hook can trigger an action by ID. Tabber reads the action map
+from `~/.local/state/noctalia/plugins/data/whereareiam/tabber/actions.json`:
 
-</details>
+```json
+{
+  "close": "scripts/close-selected-group.sh"
+}
+```
+
+Each key is the action ID used after `action`, and each value is an executable path. `Super+Q` works both with the
+overlay selection and, when the overlay is closed, with the compositor-focused group. `Super+H` works the
+same way through Veil: outside Tabber it hides the focused window; inside Tabber it toggles the selected window because
+Tabber publishes its target through the integration provider API.
+
+Tabber passes each action script one JSON payload containing the selected group and its windows.
+
+Tabber and Veil share the runtime state file at `$XDG_RUNTIME_DIR/veil/hidden-windows.json`; when Veil is enabled, hidden
+windows appear as highlighted switcher cards and selecting one restores it.

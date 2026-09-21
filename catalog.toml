@@ -1,0 +1,25 @@
+[[plugin]]
+id = "whereareiam/veil"
+name = "Veil"
+version = "2.0.0"
+plugin_api = 24
+author = "whereareiam"
+license = "MIT"
+icon = "eye-off"
+repository = "https://github.com/whereareiam/noctalia-plugins"
+description = "Hide windows and restore them later from a native Noctalia panel."
+tags = ["Hyprland", "Bar", "Utility", "Window Management"]
+dependencies = ["hyprctl"]
+
+[[plugin]]
+id = "whereareiam/tabber"
+name = "Tabber"
+version = "2.0.0"
+plugin_api = 24
+author = "whereareiam"
+license = "MIT"
+icon = "layout-grid"
+repository = "https://github.com/whereareiam/noctalia-plugins"
+description = "A grouped, macOS-like window switcher for Hyprland."
+tags = ["Hyprland", "Overlay", "Switcher", "Window Management"]
+dependencies = ["hyprctl"]

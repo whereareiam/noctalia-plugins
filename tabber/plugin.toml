@@ -1,0 +1,252 @@
+id = "whereareiam/tabber"
+name = "Tabber"
+version = "2.0.0"
+plugin_api = 24
+author = "whereareiam"
+license = "MIT"
+icon = "layout-grid"
+tags = ["hyprland", "overlay", "switcher", "window-management"]
+dependencies = ["hyprctl"]
+description = "A grouped, macOS-like window switcher for Hyprland."
+
+[[setting]]
+key = "group_windows_by_app"
+type = "bool"
+label_key = "settings.general.group_windows_by_app.label"
+description_key = "settings.general.group_windows_by_app.description"
+default = true
+
+[[setting]]
+key = "enter_grouped_window_selection"
+type = "bool"
+label_key = "settings.general.enter_grouped_window_selection.label"
+description_key = "settings.general.enter_grouped_window_selection.description"
+default = false
+
+[[setting]]
+key = "restrict_to_current_monitor"
+type = "bool"
+label_key = "settings.general.restrict_to_current_monitor.label"
+description_key = "settings.general.restrict_to_current_monitor.description"
+default = false
+
+[[setting]]
+key = "require_pointer_movement_for_hover_selection"
+type = "bool"
+label_key = "settings.general.require_pointer_movement_for_hover_selection.label"
+description_key = "settings.general.require_pointer_movement_for_hover_selection.description"
+default = true
+
+[[setting]]
+key = "cycle_selection_while_holding_tab"
+type = "bool"
+label_key = "settings.general.cycle_selection_while_holding_tab.label"
+description_key = "settings.general.cycle_selection_while_holding_tab.description"
+default = false
+
+[[setting]]
+key = "stop_continuous_cycle_at_edge"
+type = "bool"
+label_key = "settings.general.stop_continuous_cycle_at_edge.label"
+description_key = "settings.general.stop_continuous_cycle_at_edge.description"
+default = false
+
+[[setting]]
+key = "dim_opacity"
+type = "double"
+label_key = "settings.appearance.dim_opacity.label"
+description_key = "settings.appearance.dim_opacity.description"
+default = 0.36
+min = 0.10
+max = 0.85
+step = 0.01
+
+[[setting]]
+key = "container_width"
+type = "int"
+label_key = "settings.appearance.container_width.label"
+description_key = "settings.appearance.container_width.description"
+default = 0
+min = 0
+max = 2200
+
+[[setting]]
+key = "container_padding_top"
+type = "int"
+label_key = "settings.appearance.container_padding_top.label"
+default = 18
+min = 0
+max = 48
+
+[[setting]]
+key = "container_padding_right"
+type = "int"
+label_key = "settings.appearance.container_padding_right.label"
+default = 18
+min = 0
+max = 48
+
+[[setting]]
+key = "container_padding_bottom"
+type = "int"
+label_key = "settings.appearance.container_padding_bottom.label"
+default = 18
+min = 0
+max = 48
+
+[[setting]]
+key = "container_padding_left"
+type = "int"
+label_key = "settings.appearance.container_padding_left.label"
+default = 18
+min = 0
+max = 48
+
+[[setting]]
+key = "show_header"
+type = "bool"
+label_key = "settings.appearance.header_show.label"
+description_key = "settings.appearance.header_show.description"
+default = true
+
+[[setting]]
+key = "header_alignment"
+type = "select"
+label_key = "settings.appearance.header_alignment.label"
+default = "space-between"
+options = [
+  { value = "space-between", label_key = "settings.options.space_between" },
+  { value = "left", label_key = "settings.options.left" },
+  { value = "center", label_key = "settings.options.center" },
+]
+
+[[setting]]
+key = "header_text"
+type = "string"
+label_key = "settings.appearance.header_text.label"
+description_key = "settings.appearance.header_text.description"
+default = "Tabber"
+
+[[setting]]
+key = "show_window_count"
+type = "bool"
+label_key = "settings.appearance.header_show_window_count.label"
+default = true
+
+[[setting]]
+key = "header_padding_linked"
+type = "bool"
+label_key = "settings.appearance.header_padding_linked.label"
+default = true
+
+[[setting]]
+key = "header_padding_top"
+type = "int"
+label_key = "settings.appearance.header_padding_top.label"
+default = 0
+min = 0
+max = 36
+
+[[setting]]
+key = "header_padding_right"
+type = "int"
+label_key = "settings.appearance.header_padding_right.label"
+default = 0
+min = 0
+max = 36
+
+[[setting]]
+key = "header_padding_bottom"
+type = "int"
+label_key = "settings.appearance.header_padding_bottom.label"
+default = 0
+min = 0
+max = 36
+
+[[setting]]
+key = "header_padding_left"
+type = "int"
+label_key = "settings.appearance.header_padding_left.label"
+default = 0
+min = 0
+max = 36
+
+[[setting]]
+key = "card_size"
+type = "int"
+label_key = "settings.appearance.card_size.label"
+default = 108
+min = 64
+max = 128
+
+[[setting]]
+key = "card_gap"
+type = "int"
+label_key = "settings.appearance.card_gap.label"
+default = 9
+min = 0
+max = 48
+
+[[setting]]
+key = "icon_size"
+type = "int"
+label_key = "settings.appearance.icon_size.label"
+default = 64
+min = 24
+max = 96
+
+[[setting]]
+key = "title_visibility"
+type = "select"
+label_key = "settings.appearance.title_visibility.label"
+default = "selected"
+options = [
+  { value = "hidden", label_key = "settings.options.hidden" },
+  { value = "selected", label_key = "settings.options.selected" },
+  { value = "all", label_key = "settings.options.all" },
+]
+
+[[setting]]
+key = "title_truncation_mode"
+type = "select"
+label_key = "settings.appearance.title_truncation_mode.label"
+default = "end"
+options = [
+  { value = "end", label_key = "settings.options.end_ellipsis" },
+  { value = "middle", label_key = "settings.options.middle_ellipsis" },
+  { value = "two-lines", label_key = "settings.options.two_lines" },
+]
+
+[[setting]]
+key = "veil_integration"
+type = "bool"
+label_key = "settings.integrations.veil_enabled.label"
+description_key = "settings.integrations.veil_enabled.description"
+default = true
+
+[[setting]]
+key = "highlight_hidden_cards"
+type = "bool"
+label_key = "settings.integrations.highlight_hidden_cards.label"
+default = true
+
+[[setting]]
+key = "hidden_card_color"
+type = "string"
+label_key = "settings.integrations.hidden_card_accent_color.label"
+description_key = "settings.integrations.hidden_card_accent_color.description"
+default = ""
+
+[[service]]
+id = "service"
+entry = "EntryPoints/Service.luau"
+
+[[panel]]
+id = "overlay"
+entry = "EntryPoints/Overlay.luau"
+width = "fill"
+height = "fill"
+placement = "floating"
+position = "center"
+keyboard_focus = "exclusive"
+capture_keys = ["Tab", "Shift+Tab", "Escape", "Grave", "Alt_L", "Alt_R"]

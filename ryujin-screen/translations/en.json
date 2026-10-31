@@ -1,0 +1,21 @@
+{
+  "panel": { "title": "Ryujin screen", "close": "Close" },
+  "notice": {
+    "missing": "ryujin-screen is not installed or failed to run.",
+    "disconnected": "The cooler is not connected.",
+    "stopped": "The screen service is stopped.",
+    "start": "Start"
+  },
+  "mode": { "dashboard": "Dashboard", "built-in": "Built-in", "image": "Image", "gif": "GIF" },
+  "media": {
+    "title": "Images and GIFs",
+    "refresh": "Reload folder",
+    "choose_folder": "Choose folder",
+    "empty": "No images or GIFs in this folder."
+  },
+  "bar": { "on": "Ryujin screen: {mode}", "off": "Ryujin screen: off", "disconnected": "Ryujin screen: cooler not connected" },
+  "settings": {
+    "media_folder": { "label": "Media folder", "description": "Folder whose images and GIFs the panel offers." },
+    "command": { "label": "ryujin-screen command", "description": "Name or path of the ryujin-screen executable." }
+  }
+}

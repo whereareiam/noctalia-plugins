@@ -23,3 +23,16 @@ repository = "https://github.com/whereareiam/noctalia-plugins"
 description = "A grouped, macOS-like window switcher for Hyprland."
 tags = ["Hyprland", "Overlay", "Switcher", "Window Management"]
 dependencies = ["hyprctl"]
+
+[[plugin]]
+id = "whereareiam/ryujin-screen"
+name = "Ryujin Screen"
+version = "1.0.0"
+plugin_api = 24
+author = "whereareiam"
+license = "MIT"
+icon = "device-desktop"
+repository = "https://github.com/whereareiam/noctalia-plugins"
+description = "Control the screen of an ASUS ROG Ryujin III Extreme: power, brightness, a temperature dashboard, images and GIFs."
+tags = ["Hardware", "Bar", "Utility"]
+dependencies = ["ryujin-screen", "systemctl"]

@@ -13,6 +13,7 @@ Add this repository as a plugin source in Noctalia, then enable the plugins:
 noctalia msg plugins source add whereareiam git https://github.com/whereareiam/noctalia-plugins
 noctalia msg plugins enable whereareiam/veil
 noctalia msg plugins enable whereareiam/tabber
+noctalia msg plugins enable whereareiam/ryujin-screen
 ```
 
 For local development, use a path source instead:
@@ -87,3 +88,39 @@ Tabber passes each action script one JSON payload containing the selected group 
 
 Tabber and Veil share the runtime state file at `$XDG_RUNTIME_DIR/veil/hidden-windows.json`; when Veil is enabled, hidden
 windows appear as highlighted switcher cards and selecting one restores it.
+
+<details>
+<summary><strong>Ryujin Screen</strong> — ASUS ROG Ryujin III Extreme screen control</summary>
+
+### What it does
+
+Ryujin Screen controls the screen of an ASUS ROG Ryujin III Extreme AIO cooler. Its panel
+switches the screen on and off, sets the brightness, and chooses between a live temperature
+dashboard, the cooler's built-in animation, and the images and GIFs in a media folder.
+
+### Requirements
+
+- [ryujin-screen](https://github.com/whereareiam/ryujin-screen), installed with its user service
+- `systemctl`
+
+### After installation
+
+Add the `whereareiam/ryujin-screen:bar` widget to your bar, or bind the panel to a key:
+
+```ini
+bind = SUPER, F12, exec, noctalia msg panel-toggle whereareiam/ryujin-screen:control
+```
+
+Put images and GIFs in `~/Pictures/Ryujin`, or choose another folder in the plugin's settings.
+
+Other actions for keybinds and scripts:
+
+```sh
+noctalia msg plugin whereareiam/ryujin-screen:service all toggle
+noctalia msg plugin whereareiam/ryujin-screen:service all brightness 60
+noctalia msg plugin whereareiam/ryujin-screen:service all dashboard
+```
+
+The service also accepts `on`, `off`, `built-in`, `open` and `refresh`.
+
+</details>

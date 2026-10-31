@@ -1,0 +1,42 @@
+id = "whereareiam/ryujin-screen"
+name = "Ryujin Screen"
+version = "1.0.0"
+plugin_api = 24
+author = "whereareiam"
+license = "MIT"
+icon = "device-desktop"
+tags = ["hardware", "utility", "bar"]
+dependencies = ["ryujin-screen", "systemctl"]
+description = "Control the screen of an ASUS ROG Ryujin III Extreme: power, brightness, a temperature dashboard, images and GIFs."
+
+[[setting]]
+key = "media_folder"
+type = "folder"
+label_key = "settings.media_folder.label"
+description_key = "settings.media_folder.description"
+default = "~/Pictures/Ryujin"
+
+[[setting]]
+key = "command"
+type = "string"
+label_key = "settings.command.label"
+description_key = "settings.command.description"
+default = "ryujin-screen"
+advanced = true
+
+[[service]]
+id = "service"
+entry = "EntryPoints/Service.luau"
+
+[[widget]]
+id = "bar"
+entry = "EntryPoints/BarWidget.luau"
+
+[[panel]]
+id = "control"
+entry = "EntryPoints/ControlPanel.luau"
+width = 380
+height = 560
+placement = "attached"
+position = "auto"
+open_near_click = true

@@ -1,0 +1,21 @@
+{
+  "panel": { "title": "Экран Ryujin", "close": "Закрыть" },
+  "notice": {
+    "missing": "ryujin-screen не установлен или не запускается.",
+    "disconnected": "Кулер не подключён.",
+    "stopped": "Служба экрана остановлена.",
+    "start": "Запустить"
+  },
+  "mode": { "dashboard": "Панель", "built-in": "Встроенная", "image": "Изображение", "gif": "GIF" },
+  "media": {
+    "title": "Изображения и GIF",
+    "refresh": "Обновить папку",
+    "choose_folder": "Выбрать папку",
+    "empty": "В этой папке нет изображений и GIF."
+  },
+  "bar": { "on": "Экран Ryujin: {mode}", "off": "Экран Ryujin: выключен", "disconnected": "Экран Ryujin: кулер не подключён" },
+  "settings": {
+    "media_folder": { "label": "Папка с медиа", "description": "Папка, изображения и GIF из которой предлагает панель." },
+    "command": { "label": "Команда ryujin-screen", "description": "Имя или путь к программе ryujin-screen." }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "panel": { "title": "Ryujin-Display", "close": "Schließen" },
+  "notice": {
+    "missing": "ryujin-screen ist nicht installiert oder ließ sich nicht starten.",
+    "disconnected": "Der Kühler ist nicht verbunden.",
+    "stopped": "Der Display-Dienst ist gestoppt.",
+    "start": "Starten"
+  },
+  "mode": { "dashboard": "Dashboard", "built-in": "Integriert", "image": "Bild", "gif": "GIF" },
+  "media": {
+    "title": "Bilder und GIFs",
+    "refresh": "Ordner neu laden",
+    "choose_folder": "Ordner wählen",
+    "empty": "Keine Bilder oder GIFs in diesem Ordner."
+  },
+  "bar": { "on": "Ryujin-Display: {mode}", "off": "Ryujin-Display: aus", "disconnected": "Ryujin-Display: Kühler nicht verbunden" },
+  "settings": {
+    "media_folder": { "label": "Medienordner", "description": "Ordner, dessen Bilder und GIFs das Panel anbietet." },
+    "command": { "label": "ryujin-screen-Befehl", "description": "Name oder Pfad des ryujin-screen-Programms." }
+  }
+}

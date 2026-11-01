@@ -85,12 +85,12 @@ function Builder.build(snapshot, options, integrationEntries, recentIds, lastFoc
         local icon = iconCache[appId]
         if icon == nil and appId ~= "" then
           icon = noctalia.appIconPath(appId, options.iconSize)
-          iconCache[appId] = icon or false
+          iconCache[appId] = icon
         end
         byId[groupId] = {
           groupId = groupId,
           appId = appId,
-          iconPath = icon ~= false and icon or nil,
+          iconPath = icon,
           windows = {},
           hasVisibleWindow = true,
           hasFocusedWindow = false,
